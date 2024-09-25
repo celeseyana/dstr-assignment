@@ -153,30 +153,28 @@ void printCSV(std::string **data, int numRows, int numCols)
     }
 }
 
-void countWordsInRow(const std::string &row, std::string *positiveWords, int positiveSize, std::string *negativeWords, int negativeSize, int &positiveCount, int &negativeCount)
+void countWordsInRow(const std::string &row, std::string *positiveWords, int positiveSize, std::string *negativeWords, int negativeSize, int &positiveCount, int &negativeCount) // THIS GUY IS THE LINEAR SEARCH
 {
     std::istringstream stream(row);
     std::string word;
 
     while (stream >> word)
     {
-        // Search in positive words
-        for (int i = 0; i < positiveSize; ++i)
+        for (int i = 0; i < positiveSize; ++i) // THIS GUY IS THE LINEAR SEARCH
         {
             if (word == positiveWords[i])
             {
                 positiveCount++;
-                break; // Stop searching once the word is found
+                break; // kill this mf process
             }
         }
 
-        // Search in negative words
-        for (int i = 0; i < negativeSize; ++i)
+        for (int i = 0; i < negativeSize; ++i) // THIS GUY IS THE LINEAR SEARCH
         {
             if (word == negativeWords[i])
             {
                 negativeCount++;
-                break; // Stop searching once the word is found
+                break; // kill this mf process
             }
         }
     }
@@ -188,22 +186,47 @@ void analyzeCSV(std::string **data, int numRows, int numCols, FileReader &reader
     {
         int positiveCount = 0;
         int negativeCount = 0;
+        std::string trueRating;
 
-        // Combine the row into a single string for easier word extraction
         std::string row;
         for (int j = 0; j < numCols; ++j)
         {
             row += data[i][j] + " ";
         }
 
-        // Count positive and negative words in this row
         countWordsInRow(row, reader.positiveWords, reader.positiveRead, reader.negativeWords, reader.negativeRead, positiveCount, negativeCount);
 
-        // Print the results for the current row
+        int rawScore = positiveCount + negativeCount;
+        int rawSent = positiveCount - negativeCount;
+        int minRawScore = -rawScore;
+        int maxRawScore = rawScore;
+
+        double normScore = 0.0;
+        if (maxRawScore != minRawScore) // no 0
+        {
+            normScore = (double)(rawSent - minRawScore) / (maxRawScore - minRawScore);
+        }
+
+        int ratedScore = 1 + (4 * normScore);
+        double trueSentScore = 1 + (4 * normScore);
+
+        if (ratedScore == 1 || ratedScore == 2)
+        {
+            trueRating = "Negative";
+        }
+        else if (ratedScore == 4 || ratedScore == 5)
+        {
+            trueRating = "Positive";
+        }
+        else
+        {
+            trueRating = "Neutral";
+        };
+
         std::cout << "Row " << i + 1 << ": Positive words: " << positiveCount << ", Negative words: " << negativeCount << std::endl;
+        std::cout << "Sentiment score ( 1-5 ) is " << trueSentScore << ", Rating is " << ratedScore << "(" << trueRating << ")" << std::endl;
     }
 }
-// i hate this section
 
 int main()
 {
