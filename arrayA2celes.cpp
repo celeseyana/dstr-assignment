@@ -52,43 +52,10 @@ void FileReader::readPositive(const std::string &filename)
     }
 };
 
-void FileReader::readReviews(const std::string &filename)
-{
-    std::ifstream file("C:/Github/dstr-assignment/required/tripadvisor_hotel_reviews.csv");
-    if (file.is_open())
-    {
-        std::string line, review;
-        int rating;
-        std::getline(file, line);
-
-        while (std::getline(file, line) && reviewsRead < csv_array_size)
-        {
-            std::stringstream ss(line);
-            std::getline(ss, review, ',');
-
-            std::string rating_str;
-            std::getline(ss, rating_str);
-
-            try
-            {
-                rating = std::stoi(rating_str);
-            }
-            catch (const std::invalid_argument &)
-            {
-                rating = 0;
-            }
-
-            reviews[reviewsRead] = review;
-            ratings[reviewsRead] = rating;
-            reviewsRead++;
-        }
-        file.close();
-    }
-    else
-    {
-        std::cerr << "Error, file cannot be opened." << std::endl;
-    }
-}
+// void FileReader::readReviews(const std::string &filename)
+// {
+//     std::ifstream file("C:/Github/dstr-assignment/required/tripadvisor_hotel_reviews.csv");
+// }
 
 int main()
 {
