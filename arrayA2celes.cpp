@@ -2,6 +2,8 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <algorithm>
+#include <cctype>
 
 FileReader::FileReader()
 {
@@ -180,27 +182,60 @@ void countWordsInRow(const std::string &row, std::string *positiveWords, int pos
     }
 }
 
+void trim(std::string &str)
+{
+    str.erase(str.begin(), std::find_if(str.begin(), str.end(), [](unsigned char ch)
+                                        { return !std::isspace(ch); }));
+    str.erase(std::find_if(str.rbegin(), str.rend(), [](unsigned char ch)
+                           { return !std::isspace(ch); })
+                  .base(),
+              str.end());
+}
+
 void analyzeCSV(std::string **data, int numRows, int numCols, FileReader &reader)
 {
     for (int i = 0; i < numRows; ++i)
     {
         int positiveCount = 0;
         int negativeCount = 0;
-        int actualScore = 0;
 
         std::string trueRating;
-        // std::string scoreMatch;
+        std::string scoreMatch;
 
-        std::string row;
+        int actualScore = 0;
+        if (numCols >= 2)
+        {
+            std::string scoreStr = data[i][1];
+            trim(scoreStr); // rating column wont run no matter what i do bcz i think theres whitespace but this works so
+            if (!scoreStr.empty())
+            {
+                try
+                {
+                    actualScore = std::stoi(scoreStr);
+                }
+                catch (const std::invalid_argument &)
+                {
+                    std::cerr << "Invalid score at row " << i + 1 << ": " << scoreStr << std::endl;
+                    actualScore = 0;
+                }
+                catch (const std::out_of_range &)
+                {
+                    std::cerr << "Score out of range at row " << i + 1 << ": " << scoreStr << std::endl;
+                    actualScore = 0;
+                }
+            }
+            else
+            {
+                std::cerr << "Empty score at row " << i + 1 << ", defaulting to 0." << std::endl;
+                actualScore = 0;
+            }
+        }
+
+        std::string row = data[i][0];
         for (int j = 0; j < numCols; ++j)
         {
             row += data[i][j] + " ";
         }
-
-        // if (numCols > 0) // broken
-        // {
-        //     actualScore = std::stoi(data[i][numCols - 1]);
-        // }
 
         countWordsInRow(row, reader.positiveWords, reader.positiveRead, reader.negativeWords, reader.negativeRead, positiveCount, negativeCount);
 
@@ -231,19 +266,19 @@ void analyzeCSV(std::string **data, int numRows, int numCols, FileReader &reader
             trueRating = "Neutral";
         };
 
-        // if (ratedScore == actualScore)
-        // {
-        //     scoreMatch = "Score matches!";
-        // }
-        // else
-        // {
-        //     scoreMatch = "Score does not match!";
-        // }
+        if (ratedScore == actualScore)
+        {
+            scoreMatch = "Score matches!";
+        }
+        else
+        {
+            scoreMatch = "Score does not match!";
+        }
 
         std::cout << "Row " << i + 1 << ": Positive words: " << positiveCount << ", Negative words: " << negativeCount << std::endl;
         std::cout << "Sentiment score ( 1-5 ) is " << trueSentScore << ", Rating is " << ratedScore << "(" << trueRating << ")" << std::endl;
-        // std::cout << "User's given score is: " << actualScore << std::endl; // broken
-        // std::cout << scoreMatch << std::endl;
+        std::cout << "User's given score is: " << actualScore << std::endl; // broken
+        std::cout << scoreMatch << std::endl;
     }
 }
 
