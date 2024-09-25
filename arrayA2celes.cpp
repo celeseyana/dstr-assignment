@@ -152,6 +152,57 @@ void printCSV(std::string **data, int numRows, int numCols)
         std::cout << std::endl;
     }
 }
+
+void countWordsInRow(const std::string &row, std::string *positiveWords, int positiveSize, std::string *negativeWords, int negativeSize, int &positiveCount, int &negativeCount)
+{
+    std::istringstream stream(row);
+    std::string word;
+
+    while (stream >> word)
+    {
+        // Search in positive words
+        for (int i = 0; i < positiveSize; ++i)
+        {
+            if (word == positiveWords[i])
+            {
+                positiveCount++;
+                break; // Stop searching once the word is found
+            }
+        }
+
+        // Search in negative words
+        for (int i = 0; i < negativeSize; ++i)
+        {
+            if (word == negativeWords[i])
+            {
+                negativeCount++;
+                break; // Stop searching once the word is found
+            }
+        }
+    }
+}
+
+void analyzeCSV(std::string **data, int numRows, int numCols, FileReader &reader)
+{
+    for (int i = 0; i < numRows; ++i)
+    {
+        int positiveCount = 0;
+        int negativeCount = 0;
+
+        // Combine the row into a single string for easier word extraction
+        std::string row;
+        for (int j = 0; j < numCols; ++j)
+        {
+            row += data[i][j] + " ";
+        }
+
+        // Count positive and negative words in this row
+        countWordsInRow(row, reader.positiveWords, reader.positiveRead, reader.negativeWords, reader.negativeRead, positiveCount, negativeCount);
+
+        // Print the results for the current row
+        std::cout << "Row " << i + 1 << ": Positive words: " << positiveCount << ", Negative words: " << negativeCount << std::endl;
+    }
+}
 // i hate this section
 
 int main()
@@ -182,6 +233,8 @@ int main()
     {
         std::cout << "CSV Data (" << numRows << " rows, " << numCols << " columns):" << std::endl;
         printCSV(csvData, numRows, numCols);
+
+        analyzeCSV(csvData, numRows, numCols, reader);
 
         for (int i = 0; i < numRows; ++i)
         {
