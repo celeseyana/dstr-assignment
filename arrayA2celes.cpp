@@ -189,7 +189,7 @@ void analyzeCSV(std::string **data, int numRows, int numCols, FileReader &reader
         int actualScore = 0;
 
         std::string trueRating;
-        std::string scoreMatch;
+        // std::string scoreMatch;
 
         std::string row;
         for (int j = 0; j < numCols; ++j)
@@ -231,19 +231,19 @@ void analyzeCSV(std::string **data, int numRows, int numCols, FileReader &reader
             trueRating = "Neutral";
         };
 
-        if (ratedScore == actualScore)
-        {
-            scoreMatch = "Score matches!";
-        }
-        else
-        {
-            scoreMatch = "Score does not match!";
-        }
+        // if (ratedScore == actualScore)
+        // {
+        //     scoreMatch = "Score matches!";
+        // }
+        // else
+        // {
+        //     scoreMatch = "Score does not match!";
+        // }
 
         std::cout << "Row " << i + 1 << ": Positive words: " << positiveCount << ", Negative words: " << negativeCount << std::endl;
         std::cout << "Sentiment score ( 1-5 ) is " << trueSentScore << ", Rating is " << ratedScore << "(" << trueRating << ")" << std::endl;
         std::cout << "User's given score is: " << actualScore << std::endl;
-        std::cout << scoreMatch << std::endl;
+        // std::cout << scoreMatch << std::endl;
     }
 }
 
