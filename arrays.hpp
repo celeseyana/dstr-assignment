@@ -22,6 +22,8 @@ public:
     void readNegative(const std::string &filename);
     void readPositive(const std::string &filename);
     void readReviews(const std::string &filename);
+
+    std::string **readCSV(const std::string &filename, int &numRows, int &numCols);
 };
 
 #endif
