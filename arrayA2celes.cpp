@@ -282,6 +282,28 @@ void analyzeCSV(std::string **data, int numRows, int numCols, FileReader &reader
     }
 }
 
+int reviewCount(const std::string &filename)
+{
+    std::ifstream file(filename);
+    std::string line;
+    int rowCount = -1;
+
+    if (file.is_open())
+    {
+        while (std::getline(file, line))
+        {
+            rowCount++;
+        }
+        file.close();
+    }
+    else
+    {
+        std::cerr << "Error: Could not open file " << filename << std::endl;
+    }
+
+    return rowCount;
+}
+
 int main()
 {
     int numRows = 0;
@@ -291,6 +313,9 @@ int main()
 
     reader.readNegative("C:/Github/dstr-assignment/required/negative-words.txt");
     reader.readPositive("C:/Github/dstr-assignment/required/positive-words.txt");
+
+    std::string filename = "C:/Github/dstr-assignment/required/tripadvisor_hotel_reviews.csv";
+    int reviewNumber = reviewCount(filename);
 
     std::cout << "Negative Words:" << std::endl;
     for (int i = 0; i < reader.negativeRead; i++)
@@ -319,6 +344,8 @@ int main()
         }
         delete[] csvData;
     }
+
+    std::cout << "Total Amount of Reviews: " << reviewNumber << std::endl;
 
     return 0;
 }
