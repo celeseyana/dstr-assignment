@@ -282,7 +282,7 @@ void analyzeCSV(std::string **data, int numRows, int numCols, FileReader &reader
     }
 }
 
-int reviewCount(const std::string &filename)
+int totalCount(const std::string &filename)
 {
     std::ifstream file(filename);
     std::string line;
@@ -298,7 +298,7 @@ int reviewCount(const std::string &filename)
     }
     else
     {
-        std::cerr << "Error: Could not open file " << filename << std::endl;
+        std::cerr << "error!" << filename << std::endl;
     }
 
     return rowCount;
@@ -314,8 +314,16 @@ int main()
     reader.readNegative("C:/Github/dstr-assignment/required/negative-words.txt");
     reader.readPositive("C:/Github/dstr-assignment/required/positive-words.txt");
 
-    std::string filename = "C:/Github/dstr-assignment/required/tripadvisor_hotel_reviews.csv";
-    int reviewNumber = reviewCount(filename);
+    std::string filename;
+
+    filename = "C:/Github/dstr-assignment/required/tripadvisor_hotel_reviews.csv";
+    int reviewNumber = totalCount(filename);
+
+    filename = "C:/Github/dstr-assignment/required/positive-words.txt";
+    int totalPos = totalCount(filename);
+
+    filename = "C:/Github/dstr-assignment/required/negative-words.txt";
+    int totalNeg = totalCount(filename);
 
     std::cout << "Negative Words:" << std::endl;
     for (int i = 0; i < reader.negativeRead; i++)
@@ -345,7 +353,9 @@ int main()
         delete[] csvData;
     }
 
-    std::cout << "Total Amount of Reviews: " << reviewNumber << std::endl;
+    std::cout << "\nTotal Amount of Reviews: " << reviewNumber << std::endl;
+    std::cout << "\nTotal Positive Words: " << totalPos << std::endl;
+    std::cout << "\nTotal Negative Words: " << totalNeg << std::endl;
 
     return 0;
 }
