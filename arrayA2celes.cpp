@@ -4,12 +4,23 @@
 #include <sstream>
 #include <algorithm>
 #include <cctype>
+#include <limits>
 
 FileReader::FileReader()
 {
     negativeRead = 0;
     positiveRead = 0;
     reviewsRead = 0;
+}
+
+void displayMenu()
+{
+    std::cout << "Select an option to display:\n";
+    std::cout << "1. Display Negative Words\n";
+    std::cout << "2. Display Positive Words\n";
+    std::cout << "3. Display CSV Data\n";
+    std::cout << "4. Display Review Data\n";
+    std::cout << "5. Exit\n";
 }
 
 void FileReader::readNegative(const std::string &filename)
@@ -325,37 +336,61 @@ int main()
     filename = "C:/Github/dstr-assignment/required/negative-words.txt";
     int totalNeg = totalCount(filename);
 
-    std::cout << "Negative Words:" << std::endl;
-    for (int i = 0; i < reader.negativeRead; i++)
-    {
-        std::cout << reader.negativeWords[i] << std::endl;
-    }
-
-    std::cout << "\nPositive Words:" << std::endl;
-    for (int i = 0; i < reader.positiveRead; i++)
-    {
-        std::cout << reader.positiveWords[i] << std::endl;
-    }
-
     std::string **csvData = readCSV("C:/Github/dstr-assignment/required/tripadvisor_hotel_reviews.csv", numRows, numCols);
 
-    if (csvData != nullptr)
+    int choice = 0;
+
+    while (true)
     {
-        std::cout << "CSV Data (" << numRows << " rows, " << numCols << " columns):" << std::endl;
-        printCSV(csvData, numRows, numCols);
+        displayMenu();
+        std::cout << "Enter your choice (1-6): ";
+        std::cin >> choice;
 
-        analyzeCSV(csvData, numRows, numCols, reader);
-
-        for (int i = 0; i < numRows; ++i)
+        while (std::cin.fail() || choice < 1 || choice > 6)
         {
-            delete[] csvData[i];
+            std::cout << "Invalid choice. Please enter a number between 1 and 6: ";
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cin >> choice;
         }
-        delete[] csvData;
+
+        switch (choice)
+        {
+        case 1:
+            std::cout << "Negative Words:\n";
+            for (int i = 0; i < reader.negativeRead; i++)
+            {
+                std::cout << reader.negativeWords[i] << std::endl;
+            }
+            break;
+        case 2:
+            std::cout << "\nPositive Words:\n";
+            for (int i = 0; i < reader.positiveRead; i++)
+            {
+                std::cout << reader.positiveWords[i] << std::endl;
+            }
+            break;
+        case 3:
+            if (csvData != nullptr)
+            {
+                std::cout << "CSV Data (" << numRows << " rows, " << numCols << " columns):\n";
+                printCSV(csvData, numRows, numCols);
+                analyzeCSV(csvData, numRows, numCols, reader);
+            }
+            break;
+        case 4:
+            std::cout << "\nReview Count: " << reviewNumber << std::endl;
+            std::cout << "\nTotal Positive Words: " << totalPos << std::endl;
+            std::cout << "\nTotal Negative Words: " << totalNeg << std::endl;
+            break;
+        case 5:
+            std::cout << "Exiting.\n";
+            return 0;
+        default:
+            break;
+        }
+
+        std::cout << "\n";
     }
-
-    std::cout << "\nTotal Amount of Reviews: " << reviewNumber << std::endl;
-    std::cout << "\nTotal Positive Words: " << totalPos << std::endl;
-    std::cout << "\nTotal Negative Words: " << totalNeg << std::endl;
-
     return 0;
 }
