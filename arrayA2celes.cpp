@@ -316,6 +316,77 @@ int totalCount(const std::string &filename)
     return rowCount;
 }
 
+// bubble sort algo
+void countWordFrequencies(std::string **data, int numRows, FileReader &reader, int positiveCounts[], int negativeCounts[])
+{
+    for (int i = 0; i < reader.positiveRead; ++i)
+    {
+        positiveCounts[i] = 0;
+    }
+
+    for (int i = 0; i < reader.negativeRead; ++i)
+    {
+        negativeCounts[i] = 0;
+    }
+
+    for (int i = 0; i < numRows; ++i)
+    {
+        std::string row;
+        for (int j = 0; j < 2; ++j)
+        {
+            row += data[i][j] + " ";
+        }
+
+        std::istringstream stream(row);
+        std::string word;
+
+        while (stream >> word)
+        {
+            // pos check
+            for (int j = 0; j < reader.positiveRead; ++j)
+            {
+                if (word == reader.positiveWords[j])
+                {
+                    positiveCounts[j]++;
+                }
+            }
+
+            // neg check
+            for (int j = 0; j < reader.negativeRead; ++j)
+            {
+                if (word == reader.negativeWords[j])
+                {
+                    negativeCounts[j]++;
+                }
+            }
+        }
+    }
+}
+
+void bubbleSort(std::string words[], int counts[], int size)
+{
+    for (int i = 0; i < size - 1; ++i)
+    {
+        for (int j = 0; j < size - i - 1; ++j)
+        {
+            if (counts[j] < counts[j + 1]) // descending
+            {
+                std::swap(counts[j], counts[j + 1]);
+                std::swap(words[j], words[j + 1]);
+            }
+        }
+    }
+}
+
+void displayTopWords(std::string words[], int counts[], int size)
+{
+    for (int i = 0; i < size; ++i)
+    {
+        std::cout << words[i] << ": " << counts[i] << std::endl;
+    }
+}
+// bubble SORT END
+
 int main()
 {
     int numRows = 0;
@@ -325,6 +396,8 @@ int main()
 
     reader.readNegative("C:/Github/dstr-assignment/required/negative-words.txt");
     reader.readPositive("C:/Github/dstr-assignment/required/positive-words.txt");
+    int *positiveCounts = new int[reader.positiveRead];
+    int *negativeCounts = new int[reader.negativeRead];
 
     std::string filename;
 
@@ -338,6 +411,7 @@ int main()
     int totalNeg = totalCount(filename);
 
     std::string **csvData = readCSV("C:/Github/dstr-assignment/required/tripadvisor_hotel_reviews.csv", numRows, numCols);
+    countWordFrequencies(csvData, numRows, reader, positiveCounts, negativeCounts);
 
     int choice = 0;
 
@@ -383,6 +457,17 @@ int main()
             std::cout << "\nTotal Review Count: " << reviewNumber << std::endl;
             std::cout << "\nTotal Positive Words: " << totalPos << std::endl;
             std::cout << "\nTotal Negative Words: " << totalNeg << std::endl;
+
+            bubbleSort(reader.positiveWords, positiveCounts, reader.positiveRead);
+            std::cout << "\nTop 10 Positive Words:\n";
+            displayTopWords(reader.positiveWords, positiveCounts, std::min(10, reader.positiveRead));
+
+            bubbleSort(reader.negativeWords, negativeCounts, reader.negativeRead);
+            std::cout << "\nTop 10 Negative Words:\n";
+            displayTopWords(reader.negativeWords, negativeCounts, std::min(10, reader.negativeRead));
+
+            delete[] positiveCounts;
+            delete[] negativeCounts;
             break;
         case 5:
             std::cout << "Exiting.\n";

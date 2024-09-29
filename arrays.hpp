@@ -22,6 +22,10 @@ public:
     void readNegative(const std::string &filename);
     void readPositive(const std::string &filename);
 
+    void countWordFrequencies(std::string **data, int numRows, FileReader &reader, int *positiveCounts, int *negativeCounts);
+    void bubbleSort(std::string words[], int counts[], int size);
+    void displayTopWords(std::string words[], int counts[], int size);
+
     std::string **readCSV(const std::string &filename, int &numRows, int &numCols);
 };
 
