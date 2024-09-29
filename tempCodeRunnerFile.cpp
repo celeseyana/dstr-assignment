@@ -1,1 +1,1 @@
-    std::cout << "\nTotal Amount of Reviews: " << reviewNumber << std::endl;
+findTopWords(reader, csvData, numRows, numCols);

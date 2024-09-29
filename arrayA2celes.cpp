@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <cctype>
 #include <limits>
+#include <string>
 
 FileReader::FileReader()
 {
@@ -379,7 +380,7 @@ int main()
             }
             break;
         case 4:
-            std::cout << "\nReview Count: " << reviewNumber << std::endl;
+            std::cout << "\nTotal Review Count: " << reviewNumber << std::endl;
             std::cout << "\nTotal Positive Words: " << totalPos << std::endl;
             std::cout << "\nTotal Negative Words: " << totalNeg << std::endl;
             break;
