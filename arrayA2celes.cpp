@@ -2,7 +2,6 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <algorithm>
 #include <cctype>
 #include <limits>
 #include <string>
@@ -26,7 +25,7 @@ void displayMenu()
 
 void FileReader::readNegative(const std::string &filename)
 {
-    std::ifstream file("D:/Github/dstr-assignment/required/negative-words.txt");
+    std::ifstream file("C:/Github/dstr-assignment/required/negative-words.txt");
 
     if (file.is_open())
     {
@@ -47,7 +46,7 @@ void FileReader::readNegative(const std::string &filename)
 
 void FileReader::readPositive(const std::string &filename)
 {
-    std::ifstream file("D:/Github/dstr-assignment/required/positive-words.txt");
+    std::ifstream file("C:/Github/dstr-assignment/required/positive-words.txt");
 
     if (file.is_open())
     {
@@ -196,12 +195,20 @@ void countWordsInRow(const std::string &row, std::string *positiveWords, int pos
 
 void trim(std::string &str)
 {
-    str.erase(str.begin(), std::find_if(str.begin(), str.end(), [](unsigned char ch)
-                                        { return !std::isspace(ch); }));
-    str.erase(std::find_if(str.rbegin(), str.rend(), [](unsigned char ch)
-                           { return !std::isspace(ch); })
-                  .base(),
-              str.end());
+    size_t start = 0;
+    while (start < str.size() && std::isspace(static_cast<unsigned char>(str[start])))
+    {
+        start++;
+    }
+    str.erase(0, start);
+
+    // Remove trailing spaces
+    size_t end = str.size();
+    while (end > 0 && std::isspace(static_cast<unsigned char>(str[end - 1])))
+    {
+        end--;
+    }
+    str.erase(end);
 }
 
 void analyzeCSV(std::string **data, int numRows, int numCols, FileReader &reader)
@@ -371,8 +378,13 @@ void bubbleSort(std::string words[], int counts[], int size)
         {
             if (counts[j] < counts[j + 1]) // descending
             {
-                std::swap(counts[j], counts[j + 1]);
-                std::swap(words[j], words[j + 1]);
+                int tempCount = counts[j];
+                counts[j] = counts[j + 1];
+                counts[j + 1] = tempCount;
+
+                std::string tempWord = words[j];
+                words[j] = words[j + 1];
+                words[j + 1] = tempWord;
             }
         }
     }
@@ -394,23 +406,23 @@ int main()
 
     FileReader reader;
 
-    reader.readNegative("D:/Github/dstr-assignment/required/negative-words.txt");
-    reader.readPositive("D:/Github/dstr-assignment/required/positive-words.txt");
+    reader.readNegative("C:/Github/dstr-assignment/required/negative-words.txt");
+    reader.readPositive("C:/Github/dstr-assignment/required/positive-words.txt");
     int *positiveCounts = new int[reader.positiveRead];
     int *negativeCounts = new int[reader.negativeRead];
 
     std::string filename;
 
-    filename = "D:/Github/dstr-assignment/required/tripadvisor_hotel_reviews.csv";
+    filename = "C:/Github/dstr-assignment/required/tripadvisor_hotel_reviews.csv";
     int reviewNumber = totalCount(filename);
 
-    filename = "D:/Github/dstr-assignment/required/positive-words.txt";
+    filename = "C:/Github/dstr-assignment/required/positive-words.txt";
     int totalPos = totalCount(filename);
 
-    filename = "D:/Github/dstr-assignment/required/negative-words.txt";
+    filename = "C:/Github/dstr-assignment/required/negative-words.txt";
     int totalNeg = totalCount(filename);
 
-    std::string **csvData = readCSV("D:/Github/dstr-assignment/required/tripadvisor_hotel_reviews.csv", numRows, numCols);
+    std::string **csvData = readCSV("C:/Github/dstr-assignment/required/tripadvisor_hotel_reviews.csv", numRows, numCols);
     countWordFrequencies(csvData, numRows, reader, positiveCounts, negativeCounts);
 
     int choice = 0;
@@ -418,7 +430,7 @@ int main()
     while (true)
     {
         displayMenu();
-        std::cout << "Enter your choice (1-6): ";
+        std::cout << "Enter your choice (1-5): ";
         std::cin >> choice;
 
         while (std::cin.fail() || choice < 1 || choice > 6)
