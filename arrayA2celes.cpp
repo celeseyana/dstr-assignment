@@ -178,7 +178,7 @@ void countWordsInRow(const std::string &row, std::string *positiveWords, int pos
             if (word == positiveWords[i])
             {
                 positiveCount++;
-                break; // kill this mf process
+                break; // kill process
             }
         }
 
@@ -187,7 +187,7 @@ void countWordsInRow(const std::string &row, std::string *positiveWords, int pos
             if (word == negativeWords[i])
             {
                 negativeCount++;
-                break; // kill this mf process
+                break; // kill process
             }
         }
     }
@@ -202,7 +202,6 @@ void trim(std::string &str)
     }
     str.erase(0, start);
 
-    // Remove trailing spaces
     size_t end = str.size();
     while (end > 0 && std::isspace(static_cast<unsigned char>(str[end - 1])))
     {
