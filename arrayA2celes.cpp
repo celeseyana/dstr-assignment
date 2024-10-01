@@ -26,7 +26,7 @@ void displayMenu()
 
 void FileReader::readNegative(const std::string &filename)
 {
-    std::ifstream file("C:/Github/dstr-assignment/required/negative-words.txt");
+    std::ifstream file("D:/Github/dstr-assignment/required/negative-words.txt");
 
     if (file.is_open())
     {
@@ -47,7 +47,7 @@ void FileReader::readNegative(const std::string &filename)
 
 void FileReader::readPositive(const std::string &filename)
 {
-    std::ifstream file("C:/Github/dstr-assignment/required/positive-words.txt");
+    std::ifstream file("D:/Github/dstr-assignment/required/positive-words.txt");
 
     if (file.is_open())
     {
@@ -394,23 +394,23 @@ int main()
 
     FileReader reader;
 
-    reader.readNegative("C:/Github/dstr-assignment/required/negative-words.txt");
-    reader.readPositive("C:/Github/dstr-assignment/required/positive-words.txt");
+    reader.readNegative("D:/Github/dstr-assignment/required/negative-words.txt");
+    reader.readPositive("D:/Github/dstr-assignment/required/positive-words.txt");
     int *positiveCounts = new int[reader.positiveRead];
     int *negativeCounts = new int[reader.negativeRead];
 
     std::string filename;
 
-    filename = "C:/Github/dstr-assignment/required/tripadvisor_hotel_reviews.csv";
+    filename = "D:/Github/dstr-assignment/required/tripadvisor_hotel_reviews.csv";
     int reviewNumber = totalCount(filename);
 
-    filename = "C:/Github/dstr-assignment/required/positive-words.txt";
+    filename = "D:/Github/dstr-assignment/required/positive-words.txt";
     int totalPos = totalCount(filename);
 
-    filename = "C:/Github/dstr-assignment/required/negative-words.txt";
+    filename = "D:/Github/dstr-assignment/required/negative-words.txt";
     int totalNeg = totalCount(filename);
 
-    std::string **csvData = readCSV("C:/Github/dstr-assignment/required/tripadvisor_hotel_reviews.csv", numRows, numCols);
+    std::string **csvData = readCSV("D:/Github/dstr-assignment/required/tripadvisor_hotel_reviews.csv", numRows, numCols);
     countWordFrequencies(csvData, numRows, reader, positiveCounts, negativeCounts);
 
     int choice = 0;
@@ -465,9 +465,6 @@ int main()
             bubbleSort(reader.negativeWords, negativeCounts, reader.negativeRead);
             std::cout << "\nTop 10 Negative Words:\n";
             displayTopWords(reader.negativeWords, negativeCounts, std::min(10, reader.negativeRead));
-
-            delete[] positiveCounts;
-            delete[] negativeCounts;
             break;
         case 5:
             std::cout << "Exiting.\n";
