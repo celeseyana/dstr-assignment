@@ -1,28 +1,29 @@
-#ifndef READFILE_HPP
-#define READFILE_HPP
+#ifndef ARRAYS
+#define ARRAYS
+
+#include <iostream>
+#include <fstream>
+#include <cstring>
+
 using namespace std;
-#include <string>
 
-class FileReader
+
+// to store reviews and ratings in a linked list
+struct ReviewNode
 {
-public:
-    static const int array_size = 5000;
-    static const int csv_array_size = 21000;
-    std::string negativeWords[array_size];
-    std::string positiveWords[array_size];
-    std::string reviews[csv_array_size];
-    int ratings[csv_array_size];
-
-    int negativeRead = 0;
-    int positiveRead = 0;
-    int reviewsRead = 0;
-
-    FileReader();
-
-    void readNegative(const std::string& filename);
-    void readPositive(const std::string& filename);
-
-    std::string** readCSV(const std::string& filename, int& numRows, int& numCols);
+	string review;
+	int rating; // User's rating
+	ReviewNode* next;
 };
 
-#endif
+// function declarations
+int loadWords(const char* filename, string* wordArray, int maxWords);
+ReviewNode* loadReviews(const char* filename);
+void selectionSort(string* arr, int size);
+int binarySearch(string* arr, int size, const string& word);
+void countSentimentWords(const string& review, string* positiveWords, int positiveCount, string* negativeWords, int negativeCount, int& positiveCountInReview, int& negativeCountInReview);
+double calculateSentimentScore(int positiveCount, int negativeCount, int maxCount);
+void analyzeReviews(ReviewNode* reviews, string* positiveWords, int positiveCount, string* negativeWords, int negativeCount);
+void deleteReviews(ReviewNode* head);
+
+#endif // !ARRAYS
