@@ -5,9 +5,9 @@
 #include <fstream>
 #include <cstring>
 #include <string>
-
+#include <chrono>
 using namespace std;
-
+using namespace chrono;
 
 // to store reviews and ratings in a linked list
 struct ReviewNode
@@ -20,7 +20,7 @@ struct ReviewNode
 // function declarations
 int loadWords(const char* filename, string* wordArray, int maxWords);
 ReviewNode* loadReviews(const char* filename);
-void selectionSort(string* arr, int size);
+void insertionSort(string* arr, int size);
 void swapStrings(string& a, string& b); // to replace swap from <algorithm>
 int binarySearch(string* arr, int size, const string& word);
 void countSentimentWords(const string& review, string* positiveWords, int positiveCount, string* negativeWords, int negativeCount, int& positiveCountInReview, int& negativeCountInReview);

@@ -7,7 +7,7 @@ int loadWords(const char* filename, string* wordArray, int maxWords) {
         cout << "Error: Unable to open " << filename << endl;
         return 0;
     }
-    
+
     string word;
     int count = 0;
     while (file >> word && count < maxWords) {
@@ -17,7 +17,7 @@ int loadWords(const char* filename, string* wordArray, int maxWords) {
     file.close();
 
     // Sort the array using selection sort
-    selectionSort(wordArray, count);
+    insertionSort(wordArray, count);
 
     return count;
 }
@@ -36,8 +36,21 @@ ReviewNode* loadReviews(const char* filename) {
 
     while (getline(file, line)) {
         size_t commaPos = line.find_last_of(',');
+        if (commaPos == string::npos) {
+            cout << "Warning: Malformed line found, skipping." << endl;
+            continue;
+        }
+
         string review = line.substr(0, commaPos);
-        int rating = stoi(line.substr(commaPos + 1));
+        string ratingStr = line.substr(commaPos + 1);
+        int rating;
+        try {
+            rating = stoi(ratingStr);  // Convert the rating part to an integer
+        }
+        catch (exception& e) {
+            cout << "Error: Invalid rating in line: " << line << endl;
+            continue;  // Skip lines with invalid ratings
+        }
 
         ReviewNode* newNode = new ReviewNode{ review, rating, nullptr };
 
@@ -63,18 +76,17 @@ void swapStrings(string& a, string& b) {
 }
 
 // Function to sort the array using selection sort
-void selectionSort(string* arr, int size) {
-    for (int i = 0; i < size - 1; i++) {
-        int minIndex = i;
-        for (int j = i + 1; j < size; j++) {
-            if (arr[j] < arr[minIndex]) {
-                minIndex = j;
-            }
+void insertionSort(string* arr, int size) {
+    for (int i = 1; i < size; i++) {
+        string key = arr[i];
+        int j = i - 1;
+
+        // Move elements of arr[0..i-1], that are greater than key, to one position ahead of their current position
+        while (j >= 0 && arr[j] > key) {
+            arr[j + 1] = arr[j];
+            j--;
         }
-        // Use custom swap function instead of std::swap
-        if (minIndex != i) {
-            swapStrings(arr[i], arr[minIndex]);
-        }
+        arr[j + 1] = key;
     }
 }
 
@@ -137,32 +149,43 @@ double calculateSentimentScore(int positiveCount, int negativeCount, int maxCoun
 // Function to compare sentiment score with user rating and output analysis
 void analyzeReviews(ReviewNode* reviews, string* positiveWords, int positiveCount, string* negativeWords, int negativeCount) {
     ReviewNode* current = reviews;
+    int totalReviews = 0;
+    int totalPositiveWords = 0;
+    int totalNegativeWords = 0;
 
     while (current != nullptr) {
         int posCount, negCount;
         countSentimentWords(current->review, positiveWords, positiveCount, negativeWords, negativeCount, posCount, negCount);
 
+        totalPositiveWords += posCount;
+        totalNegativeWords += negCount;
+        totalReviews++;
+
+
         int maxCount = posCount + negCount;
         if (maxCount == 0) {
-            cout << "Review: " << current->review << endl;
-            cout << "No positive or negative words found." << endl;
+            cout << "Review: " << current->review << endl << endl;
+            cout << "No positive or negative words found." << endl << endl;
         }
         else {
             double sentimentScore = calculateSentimentScore(posCount, negCount, maxCount);
-            cout << "Review: " << current->review << endl;
-            cout << "User Rating: " << current->rating << " | Calculated Sentiment Score: " << sentimentScore << endl;
+            cout << "Review: " << current->review << endl << endl;
+            cout << "User Rating: " << current->rating << " | Calculated Sentiment Score: " << sentimentScore << endl <<endl << endl;
 
             // Compare the sentiment score with user rating
             if (int(sentimentScore) == current->rating) {
-                cout << "The sentiment matches the user's rating." << endl;
+                cout << "The sentiment matches the user's rating." << endl << endl;
             }
             else {
-                cout << "There is a mismatch between the sentiment and the user's rating." << endl;
+                cout << "There is a mismatch between the sentiment and the user's rating." << endl << endl;
             }
         }
-        cout << "---------------------------" << endl;
+        cout << "---------------------------" << endl << endl << endl;;
         current = current->next;
     }
+    cout << "Total Reviews Analyzed: " << totalReviews << endl;
+    cout << "Total Positive Words Found: " << totalPositiveWords << endl;
+    cout << "Total Negative Words Found: " << totalNegativeWords << endl;
 }
 
 // Function to delete the linked list and free memory
@@ -172,6 +195,7 @@ void deleteReviews(ReviewNode* head) {
         head = head->next;
         delete temp;
     }
+
 }
 
 int main() {
@@ -179,12 +203,24 @@ int main() {
     string positiveWords[MAX_WORDS];
     string negativeWords[MAX_WORDS];
 
+    auto start = high_resolution_clock::now();
+
     // Load positive and negative words
     int positiveCount = loadWords("D:/Github/dstr-assignment/dstr-assignment/tristen/tristen/tristen/required/positive-words.txt", positiveWords, MAX_WORDS);
     int negativeCount = loadWords("D:/Github/dstr-assignment/dstr-assignment/tristen/tristen/tristen/required/negative-words.txt", negativeWords, MAX_WORDS);
 
+    // Validate if words are loaded correctly
+    if (positiveCount == 0 || negativeCount == 0) {
+        cout << "Error: Failed to load sentiment words." << endl;
+        return 1;
+    }
+
     // Load reviews from CSV file
     ReviewNode* reviews = loadReviews("D:/Github/dstr-assignment/dstr-assignment/tristen/tristen/tristen/required/tripadvisor_hotel_reviews.csv");
+    if (reviews == nullptr) {
+        cout << "Error: Failed to load reviews." << endl;
+        return 1;
+    }
 
     // Perform sentiment analysis and comparison with user ratings
     analyzeReviews(reviews, positiveWords, positiveCount, negativeWords, negativeCount);
@@ -192,7 +228,10 @@ int main() {
     // Clean up linked list
     deleteReviews(reviews);
 
-    
+    auto end = high_resolution_clock::now();
+    auto duration = duration_cast<seconds>(end - start);
+
+    cout << "Time taken: " << duration.count() << "seconds" << endl;
 
     return 0;
 }
