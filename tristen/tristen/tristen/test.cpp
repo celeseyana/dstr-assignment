@@ -126,5 +126,69 @@ void countSentimentWords(const string& review, string* positiveWords, int positi
 		{
 			negativeCountInReview++;
 		}
+
+		pos = spacePos + 1;
 	}
+}
+
+double calculateSentimentScore(int positiveCount, int negativeCount, int maxCount)
+{
+	int rawScore = positiveCount - negativeCount;
+	int minRawScore = -maxCount;
+	int maxRawScore = maxCount;
+
+	double normalizedScore = (double)(rawScore - minRawScore) / (maxRawScore - minRawScore);
+	double sentimentScore = 1 + (4 * normalizedScore); 
+	return sentimentScore;
+}
+
+void analyzeReviews(ReviewNode* reviews, string* positiveWords, int positiveCount, string* negativeWords, int negativeCount)
+{
+	ReviewNode* current = reviews;
+
+	while (current != nullptr)
+	{
+		int posCount, negCount;
+		countSentimentWords(current->review, positiveWords, positiveCount, negativeWords, negativeCount, posCount, negCount);
+
+		int maxCount = posCount + negCount;
+		if (maxCount == 0)
+		{
+			cout << "Review: " << current->review << endl;
+			cout << "No positive or negative words found." << endl;
+		}
+		else
+		{
+			double sentimentScore = calculateSentimentScore(posCount, negCount, maxCount);
+			cout << "Review: " << current->review << endl;
+			cout << "User rating: " << current->rating << endl;
+
+			if (int(sentimentScore) == current->rating)
+			{
+				cout << "The sentiment matches the user's rating" << endl;
+			}
+			else
+			{
+				cout << "There is mismatch between the sentiment and the user's rating" << endl;
+			}
+		}
+		cout << "---------------------------" << endl;
+		current = current->next;
+	}
+}
+void deleteReviews(ReviewNode* head)
+{
+	while (head != nullptr)
+	{
+		ReviewNode* temp = head;
+		head = head->next;
+		delete temp;
+	}
+}
+
+int main()
+{
+	const int MAX_WORDS = 2000;
+	string positiveWords[MAX_WORDS];
+	string negativeWords[MAX_WORDS];
 }
