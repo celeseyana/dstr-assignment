@@ -109,7 +109,7 @@ int binarySearch(string* arr, int size, const string& word) {
 }
 
 // Function to count occurrences of positive and negative words in a review
-void countSentimentWords(const string& review, string* positiveWords, int positiveCount, string* negativeWords, int negativeCount, int& positiveCountInReview, int& negativeCountInReview) {
+void countSentimentWords(const string& review, string* positiveWords, int positiveCount, string* negativeWords, int negativeCount, int& positiveCountInReview, int& negativeCountInReview, string* foundPositiveWords, string* foundNegativeWords) {
     positiveCountInReview = 0;
     negativeCountInReview = 0;
 
@@ -121,19 +121,22 @@ void countSentimentWords(const string& review, string* positiveWords, int positi
         if (spacePos == string::npos) spacePos = review.length();
         word = review.substr(pos, spacePos - pos);
 
-        // Binary search for positive words
-        if (binarySearch(positiveWords, positiveCount, word) != -1) {
-            positiveCountInReview++;
+        // Check for positive words
+        int posIndex = binarySearch(positiveWords, positiveCount, word);
+        if (posIndex != -1) {
+            foundPositiveWords[positiveCountInReview++] = word;  // Store found positive word
         }
 
-        // Binary search for negative words
-        if (binarySearch(negativeWords, negativeCount, word) != -1) {
-            negativeCountInReview++;
+        // Check for negative words
+        int negIndex = binarySearch(negativeWords, negativeCount, word);
+        if (negIndex != -1) {
+            foundNegativeWords[negativeCountInReview++] = word;  // Store found negative word
         }
 
         pos = spacePos + 1;
     }
 }
+
 
 // Function to calculate and normalize the sentiment score
 double calculateSentimentScore(int positiveCount, int negativeCount, int maxCount) {
@@ -149,18 +152,23 @@ double calculateSentimentScore(int positiveCount, int negativeCount, int maxCoun
 // Function to compare sentiment score with user rating and output analysis
 void analyzeReviews(ReviewNode* reviews, string* positiveWords, int positiveCount, string* negativeWords, int negativeCount) {
     ReviewNode* current = reviews;
+
     int totalReviews = 0;
     int totalPositiveWords = 0;
     int totalNegativeWords = 0;
 
+    // Allocate arrays for found words
+    string* foundPositiveWords = new string[positiveCount];
+    string* foundNegativeWords = new string[negativeCount];
+
     while (current != nullptr) {
         int posCount, negCount;
-        countSentimentWords(current->review, positiveWords, positiveCount, negativeWords, negativeCount, posCount, negCount);
+        // Count sentiment words and store found words
+        countSentimentWords(current->review, positiveWords, positiveCount, negativeWords, negativeCount, posCount, negCount, foundPositiveWords, foundNegativeWords);
 
+        totalReviews++;
         totalPositiveWords += posCount;
         totalNegativeWords += negCount;
-        totalReviews++;
-
 
         int maxCount = posCount + negCount;
         if (maxCount == 0) {
@@ -170,23 +178,44 @@ void analyzeReviews(ReviewNode* reviews, string* positiveWords, int positiveCoun
         else {
             double sentimentScore = calculateSentimentScore(posCount, negCount, maxCount);
             cout << "Review: " << current->review << endl << endl;
-            cout << "User Rating: " << current->rating << " | Calculated Sentiment Score: " << sentimentScore << endl <<endl << endl;
+            cout << "User Rating: " << current->rating << " | Calculated Sentiment Score: " << sentimentScore << endl << endl;
 
             // Compare the sentiment score with user rating
             if (int(sentimentScore) == current->rating) {
-                cout << "The sentiment matches the user's rating." << endl << endl;
+                cout << "The sentiment matches the user's rating." << endl;
             }
             else {
-                cout << "There is a mismatch between the sentiment and the user's rating." << endl << endl;
+                cout << "There is a mismatch between the sentiment and the user's rating." << endl;
             }
+
+            // Print found positive words
+            cout << "Positive Words Found: ";
+            for (int i = 0; i < posCount; i++) {
+                cout << foundPositiveWords[i] << (i < posCount - 1 ? ", " : "");
+            }
+            cout << endl <<endl;
+
+            // Print found negative words
+            cout << "Negative Words Found: ";
+            for (int i = 0; i < negCount; i++) {
+                cout << foundNegativeWords[i] << (i < negCount - 1 ? ", " : "");
+            }
+            cout << endl;
         }
-        cout << "---------------------------" << endl << endl << endl;;
+        cout << "---------------------------" << endl<< endl;
         current = current->next;
     }
+
+    // Print total counts
     cout << "Total Reviews Analyzed: " << totalReviews << endl;
-    cout << "Total Positive Words Found: " << totalPositiveWords << endl;
-    cout << "Total Negative Words Found: " << totalNegativeWords << endl;
+    cout << "Total Positive Words: " << totalPositiveWords << endl;
+    cout << "Total Negative Words: " << totalNegativeWords << endl;
+
+    // Free the allocated memory
+    delete[] foundPositiveWords;
+    delete[] foundNegativeWords;
 }
+
 
 // Function to delete the linked list and free memory
 void deleteReviews(ReviewNode* head) {
