@@ -7,7 +7,7 @@ int loadWords(const char* filename, string* wordArray, int maxWords) {
         cout << "Error: Unable to open " << filename << endl;
         return 0;
     }
-
+    
     string word;
     int count = 0;
     while (file >> word && count < maxWords) {
@@ -180,17 +180,19 @@ int main() {
     string negativeWords[MAX_WORDS];
 
     // Load positive and negative words
-    int positiveCount = loadWords("/mnt/data/positive-words.txt", positiveWords, MAX_WORDS);
-    int negativeCount = loadWords("/mnt/data/negative-words.txt", negativeWords, MAX_WORDS);
+    int positiveCount = loadWords("D:/Github/dstr-assignment/dstr-assignment/tristen/tristen/tristen/required/positive-words.txt", positiveWords, MAX_WORDS);
+    int negativeCount = loadWords("D:/Github/dstr-assignment/dstr-assignment/tristen/tristen/tristen/required/negative-words.txt", negativeWords, MAX_WORDS);
 
     // Load reviews from CSV file
-    ReviewNode* reviews = loadReviews("/mnt/data/tripadvisor_hotel_reviews.csv");
+    ReviewNode* reviews = loadReviews("D:/Github/dstr-assignment/dstr-assignment/tristen/tristen/tristen/required/tripadvisor_hotel_reviews.csv");
 
     // Perform sentiment analysis and comparison with user ratings
     analyzeReviews(reviews, positiveWords, positiveCount, negativeWords, negativeCount);
 
     // Clean up linked list
     deleteReviews(reviews);
+
+    
 
     return 0;
 }
