@@ -127,15 +127,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="arrayA1tristen.cpp" />
     <ClCompile Include="test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\..\..\test\required\tripadvisor_hotel_reviews.csv" />
+    <None Include="..\..\..\required\tripadvisor_hotel_reviews.csv" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\..\..\..\..\test\required\negative-words.txt" />
     <Text Include="..\..\..\..\..\test\required\positive-words.txt" />
+    <Text Include="..\..\..\required\negative-words.txt" />
+    <Text Include="..\..\..\required\positive-words.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="arrays.hpp" />
