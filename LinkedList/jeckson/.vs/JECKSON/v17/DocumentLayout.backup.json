@@ -1,0 +1,52 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\liewj\\source\\repos\\jeckson\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{2031C82F-0C32-4035-BFFC-B784860EA2DF}|JECKSON\\JECKSON.vcxproj|C:\\Users\\liewj\\Desktop\\backup\\Joachim_Test.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2031C82F-0C32-4035-BFFC-B784860EA2DF}|JECKSON\\JECKSON.vcxproj|C:\\Users\\liewj\\Desktop\\backup\\linkedlist_jeckson.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 420,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "linkedlist_jeckson.cpp",
+              "DocumentMoniker": "C:\\Users\\liewj\\Desktop\\backup\\linkedlist_jeckson.cpp",
+              "RelativeDocumentMoniker": "..\\..\\..\\Desktop\\backup\\linkedlist_jeckson.cpp",
+              "ToolTip": "C:\\Users\\liewj\\Desktop\\backup\\linkedlist_jeckson.cpp",
+              "RelativeToolTip": "..\\..\\..\\Desktop\\backup\\linkedlist_jeckson.cpp",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2024-10-02T09:50:15.149Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Joachim_Test.cpp",
+              "DocumentMoniker": "C:\\Users\\liewj\\Desktop\\backup\\Joachim_Test.cpp",
+              "RelativeDocumentMoniker": "..\\..\\..\\Desktop\\backup\\Joachim_Test.cpp",
+              "ToolTip": "C:\\Users\\liewj\\Desktop\\backup\\Joachim_Test.cpp",
+              "RelativeToolTip": "..\\..\\..\\Desktop\\backup\\Joachim_Test.cpp",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAAZAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2024-10-02T09:50:05.18Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
