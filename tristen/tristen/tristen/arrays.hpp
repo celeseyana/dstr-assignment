@@ -23,7 +23,7 @@ ReviewNode* loadReviews(const char* filename);
 void insertionSort(string* arr, int size);
 void swapStrings(string& a, string& b); // to replace swap from <algorithm>
 int binarySearch(string* arr, int size, const string& word);
-void countSentimentWords(const string& review, string* positiveWords, int positiveCount, string* negativeWords, int negativeCount, int& positiveCountInReview, int& negativeCountInReview);
+void countSentimentWords(const string& review, string* positiveWords, int positiveCount, string* negativeWords, int negativeCount, int& positiveCountInReview, int& negativeCountInReview, string* foundPositiveWords, string* foundNegativeWords);
 double calculateSentimentScore(int positiveCount, int negativeCount, int maxCount);
 void analyzeReviews(ReviewNode* reviews, string* positiveWords, int positiveCount, string* negativeWords, int negativeCount);
 void deleteReviews(ReviewNode* head);

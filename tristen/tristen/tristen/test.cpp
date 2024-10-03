@@ -152,69 +152,134 @@ double calculateSentimentScore(int positiveCount, int negativeCount, int maxCoun
 // Function to compare sentiment score with user rating and output analysis
 void analyzeReviews(ReviewNode* reviews, string* positiveWords, int positiveCount, string* negativeWords, int negativeCount) {
     ReviewNode* current = reviews;
-
     int totalReviews = 0;
     int totalPositiveWords = 0;
     int totalNegativeWords = 0;
 
-    // Allocate arrays for found words
-    string* foundPositiveWords = new string[positiveCount];
-    string* foundNegativeWords = new string[negativeCount];
+    // Dynamically allocate memory for word frequencies
+    int* positiveWordFrequency = new int[positiveCount](); // Initialized to 0
+    int* negativeWordFrequency = new int[negativeCount](); // Initialized to 0
 
     while (current != nullptr) {
         int posCount, negCount;
-        // Count sentiment words and store found words
+
+        // Track words found in each review
+        string* foundPositiveWords = new string[positiveCount]();
+        string* foundNegativeWords = new string[negativeCount]();
+
         countSentimentWords(current->review, positiveWords, positiveCount, negativeWords, negativeCount, posCount, negCount, foundPositiveWords, foundNegativeWords);
 
-        totalReviews++;
+        // For every word in the current review
+        size_t pos = 0;
+        while (pos < current->review.length()) {
+            size_t spacePos = current->review.find(' ', pos);
+            if (spacePos == string::npos) spacePos = current->review.length();
+            string word = current->review.substr(pos, spacePos - pos);
+
+            // Check if word is positive
+            int posIndex = binarySearch(positiveWords, positiveCount, word);
+            if (posIndex != -1) {
+                positiveWordFrequency[posIndex]++;
+                foundPositiveWords[posIndex] = word;
+            }
+
+            // Check if word is negative
+            int negIndex = binarySearch(negativeWords, negativeCount, word);
+            if (negIndex != -1) {
+                negativeWordFrequency[negIndex]++;
+                foundNegativeWords[negIndex] = word;
+            }
+
+            pos = spacePos + 1;
+        }
+
         totalPositiveWords += posCount;
         totalNegativeWords += negCount;
+        totalReviews++;
 
+        // Display analysis for the current review
+        cout << "Review: " << current->review << endl << endl;
+        cout << "User Rating: " << current->rating << endl;
+
+        // Calculate sentiment score and print results as before
         int maxCount = posCount + negCount;
         if (maxCount == 0) {
-            cout << "Review: " << current->review << endl << endl;
             cout << "No positive or negative words found." << endl << endl;
         }
         else {
             double sentimentScore = calculateSentimentScore(posCount, negCount, maxCount);
-            cout << "Review: " << current->review << endl << endl;
-            cout << "User Rating: " << current->rating << " | Calculated Sentiment Score: " << sentimentScore << endl << endl;
-
-            // Compare the sentiment score with user rating
+            cout << "Calculated Sentiment Score: " << sentimentScore << endl;
             if (int(sentimentScore) == current->rating) {
-                cout << "The sentiment matches the user's rating." << endl;
+                cout << "The sentiment matches the user's rating." << endl << endl;
             }
             else {
-                cout << "There is a mismatch between the sentiment and the user's rating." << endl;
+                cout << "There is a mismatch between the sentiment and the user's rating." << endl << endl;
             }
-
-            // Print found positive words
-            cout << "Positive Words Found: ";
-            for (int i = 0; i < posCount; i++) {
-                cout << foundPositiveWords[i] << (i < posCount - 1 ? ", " : "");
-            }
-            cout << endl <<endl;
-
-            // Print found negative words
-            cout << "Negative Words Found: ";
-            for (int i = 0; i < negCount; i++) {
-                cout << foundNegativeWords[i] << (i < negCount - 1 ? ", " : "");
-            }
-            cout << endl;
         }
-        cout << "---------------------------" << endl<< endl;
+
+        cout << "Positive words in this review: ";
+        bool isFirst = true;
+        for (int i = 0; i < positiveCount; ++i) {
+            if (!foundPositiveWords[i].empty()) {
+                if (!isFirst)
+                {
+                    cout << ", ";
+                }
+                cout << foundPositiveWords[i];
+                isFirst = false;
+            }
+        }
+        cout << endl;
+
+        cout << "Negative words in this review: ";
+        for (int i = 0; i < negativeCount; ++i) {
+            if (!foundNegativeWords[i].empty()) {
+                if (!isFirst) 
+                {
+                    cout << ", ";
+                }
+                cout << foundNegativeWords[i];
+                isFirst = false;  
+            }
+        }
+
+        cout << endl;
+        cout << "----------------------------------------------------------------------" << endl << endl;
+
+        // Clean up memory for the current review's word tracking
+        delete[] foundPositiveWords;
+        delete[] foundNegativeWords;
+
         current = current->next;
     }
 
-    // Print total counts
+    // Print total reviews, positive, and negative words
     cout << "Total Reviews Analyzed: " << totalReviews << endl;
-    cout << "Total Positive Words: " << totalPositiveWords << endl;
-    cout << "Total Negative Words: " << totalNegativeWords << endl;
+    cout << "Total Positive Words Found: " << totalPositiveWords << endl;
+    cout << "Total Negative Words Found: " << totalNegativeWords << endl;
 
-    // Free the allocated memory
-    delete[] foundPositiveWords;
-    delete[] foundNegativeWords;
+    // Print word frequencies in ascending order
+    cout << "Frequency of Positive Words (in ascending order):" << endl;
+    for (int i = 0; i < positiveCount; ++i) {
+        if (positiveWordFrequency[i] > 0) {
+            cout << positiveWords[i] << " = " << positiveWordFrequency[i] << " times" << endl;
+        }
+    }
+    cout << endl;
+
+    cout << "Frequency of Negative Words (in ascending order):" << endl;
+    for (int i = 0; i < negativeCount; ++i) {
+        if (negativeWordFrequency[i] > 0) {
+            cout << negativeWords[i] << " = " << negativeWordFrequency[i] << " times" << endl;
+        }
+    }
+    cout << endl;
+    // Clean up memory
+    delete[] positiveWordFrequency;
+    delete[] negativeWordFrequency;
 }
+
+
 
 
 // Function to delete the linked list and free memory
