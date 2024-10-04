@@ -23,6 +23,7 @@ int loadWords(const char* filename, string* wordArray, int maxWords) {
 }
 
 // Function to load reviews from CSV file into a linked list
+// Function to load reviews from CSV file into a linked list
 ReviewNode* loadReviews(const char* filename) {
     ifstream file(filename);
     if (!file.is_open()) {
@@ -31,26 +32,17 @@ ReviewNode* loadReviews(const char* filename) {
     }
 
     string line;
+
+    // Skip the first line (header)
+    getline(file, line);
+
     ReviewNode* head = nullptr;
     ReviewNode* tail = nullptr;
 
     while (getline(file, line)) {
         size_t commaPos = line.find_last_of(',');
-        if (commaPos == string::npos) {
-            cout << "Warning: Malformed line found, skipping." << endl;
-            continue;
-        }
-
         string review = line.substr(0, commaPos);
-        string ratingStr = line.substr(commaPos + 1);
-        int rating;
-        try {
-            rating = stoi(ratingStr);  // Convert the rating part to an integer
-        }
-        catch (exception& e) {
-            cout << "Error: Invalid rating in line: " << line << endl;
-            continue;  // Skip lines with invalid ratings
-        }
+        int rating = stoi(line.substr(commaPos + 1));
 
         ReviewNode* newNode = new ReviewNode{ review, rating, nullptr };
 
@@ -148,7 +140,22 @@ double calculateSentimentScore(int positiveCount, int negativeCount, int maxCoun
     double sentimentScore = 1 + (4 * normalizedScore);  // Scale to 1-5
     return sentimentScore;
 }
+void insertionSortByFrequency(string words[], int freq[], int count) {
+    for (int i = 1; i < count; ++i) {
+        int keyFreq = freq[i];
+        string keyWord = words[i];
+        int j = i - 1;
 
+        // Sort by frequency in ascending order
+        while (j >= 0 && freq[j] > keyFreq) {
+            freq[j + 1] = freq[j];
+            words[j + 1] = words[j];
+            --j;
+        }
+        freq[j + 1] = keyFreq;
+        words[j + 1] = keyWord;
+    }
+}
 // Function to compare sentiment score with user rating and output analysis
 void analyzeReviews(ReviewNode* reviews, string* positiveWords, int positiveCount, string* negativeWords, int negativeCount) {
     ReviewNode* current = reviews;
@@ -262,24 +269,48 @@ void analyzeReviews(ReviewNode* reviews, string* positiveWords, int positiveCoun
     cout << "Frequency of Positive Words (in ascending order):" << endl;
     for (int i = 0; i < positiveCount; ++i) {
         if (positiveWordFrequency[i] > 0) {
+            for (int j = i + 1; j < positiveCount; ++j) {
+                if (positiveWordFrequency[j] < positiveWordFrequency[i] && positiveWordFrequency[j] > 0) {
+                    // Swap frequencies and words
+                    int tempFreq = positiveWordFrequency[i];
+                    positiveWordFrequency[i] = positiveWordFrequency[j];
+                    positiveWordFrequency[j] = tempFreq;
+
+                    string tempWord = positiveWords[i];
+                    positiveWords[i] = positiveWords[j];
+                    positiveWords[j] = tempWord;
+                }
+            }
             cout << positiveWords[i] << " = " << positiveWordFrequency[i] << " times" << endl;
         }
     }
     cout << endl;
 
+    // Print word frequencies in ascending order for negative words
     cout << "Frequency of Negative Words (in ascending order):" << endl;
     for (int i = 0; i < negativeCount; ++i) {
         if (negativeWordFrequency[i] > 0) {
+            for (int j = i + 1; j < negativeCount; ++j) {
+                if (negativeWordFrequency[j] < negativeWordFrequency[i] && negativeWordFrequency[j] > 0) {
+                    // Swap frequencies and words
+                    int tempFreq = negativeWordFrequency[i];
+                    negativeWordFrequency[i] = negativeWordFrequency[j];
+                    negativeWordFrequency[j] = tempFreq;
+
+                    string tempWord = negativeWords[i];
+                    negativeWords[i] = negativeWords[j];
+                    negativeWords[j] = tempWord;
+                }
+            }
             cout << negativeWords[i] << " = " << negativeWordFrequency[i] << " times" << endl;
         }
     }
+    cout << endl;
     cout << endl;
     // Clean up memory
     delete[] positiveWordFrequency;
     delete[] negativeWordFrequency;
 }
-
-
 
 
 // Function to delete the linked list and free memory
@@ -292,40 +323,4 @@ void deleteReviews(ReviewNode* head) {
 
 }
 
-int main() {
-    const int MAX_WORDS = 2000;
-    string positiveWords[MAX_WORDS];
-    string negativeWords[MAX_WORDS];
 
-    auto start = high_resolution_clock::now();
-
-    // Load positive and negative words
-    int positiveCount = loadWords("D:/Github/dstr-assignment/dstr-assignment/tristen/tristen/tristen/required/positive-words.txt", positiveWords, MAX_WORDS);
-    int negativeCount = loadWords("D:/Github/dstr-assignment/dstr-assignment/tristen/tristen/tristen/required/negative-words.txt", negativeWords, MAX_WORDS);
-
-    // Validate if words are loaded correctly
-    if (positiveCount == 0 || negativeCount == 0) {
-        cout << "Error: Failed to load sentiment words." << endl;
-        return 1;
-    }
-
-    // Load reviews from CSV file
-    ReviewNode* reviews = loadReviews("D:/Github/dstr-assignment/dstr-assignment/tristen/tristen/tristen/required/tripadvisor_hotel_reviews.csv");
-    if (reviews == nullptr) {
-        cout << "Error: Failed to load reviews." << endl;
-        return 1;
-    }
-
-    // Perform sentiment analysis and comparison with user ratings
-    analyzeReviews(reviews, positiveWords, positiveCount, negativeWords, negativeCount);
-
-    // Clean up linked list
-    deleteReviews(reviews);
-
-    auto end = high_resolution_clock::now();
-    auto duration = duration_cast<seconds>(end - start);
-
-    cout << "Time taken: " << duration.count() << "seconds" << endl;
-
-    return 0;
-}
