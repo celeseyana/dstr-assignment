@@ -5,6 +5,7 @@
 #include <cctype>
 #include <limits>
 #include <string>
+#include <cstring>
 
 FileReader::FileReader()
 {
@@ -25,7 +26,7 @@ void displayMenu()
 
 void FileReader::readNegative(const std::string &filename)
 {
-    std::ifstream file("C:/Github/dstr-assignment/required/negative-words.txt");
+    std::ifstream file("D:/Github/dstr-assignment/required/negative-words.txt");
 
     if (file.is_open())
     {
@@ -46,7 +47,7 @@ void FileReader::readNegative(const std::string &filename)
 
 void FileReader::readPositive(const std::string &filename)
 {
-    std::ifstream file("C:/Github/dstr-assignment/required/positive-words.txt");
+    std::ifstream file("D:/Github/dstr-assignment/required/positive-words.txt");
 
     if (file.is_open())
     {
@@ -398,6 +399,44 @@ void displayTopWords(std::string words[], int counts[], int size)
 }
 // bubble SORT END
 
+void FileReader::countWordMatches(int &totalpositiveCount, int &totalnegativeCount)
+{
+    // Open the CSV file
+    std::ifstream csvFile("D:/Github/dstr-assignment/required/tripadvisor_hotel_reviews.csv");
+    std::string line;
+
+    // Read each line in the CSV
+    while (std::getline(csvFile, line))
+    {
+        std::istringstream ss(line);
+        std::string word;
+
+        // Read each word
+        while (ss >> word)
+        {
+            // Count positive matches
+            for (int i = 0; i < positiveRead; i++)
+            {
+                if (word == positiveWords[i])
+                {
+                    totalpositiveCount++;
+                }
+            }
+
+            // Count negative matches
+            for (int i = 0; i < negativeRead; i++)
+            {
+                if (word == negativeWords[i])
+                {
+                    totalnegativeCount++;
+                }
+            }
+        }
+    }
+
+    csvFile.close();
+}
+
 int main()
 {
     int numRows = 0;
@@ -405,26 +444,30 @@ int main()
 
     FileReader reader;
 
-    reader.readNegative("C:/Github/dstr-assignment/required/negative-words.txt");
-    reader.readPositive("C:/Github/dstr-assignment/required/positive-words.txt");
+    reader.readNegative("D:/Github/dstr-assignment/required/negative-words.txt");
+    reader.readPositive("D:/Github/dstr-assignment/required/positive-words.txt");
     int *positiveCounts = new int[reader.positiveRead];
     int *negativeCounts = new int[reader.negativeRead];
 
     std::string filename;
 
-    filename = "C:/Github/dstr-assignment/required/tripadvisor_hotel_reviews.csv";
+    filename = "D:/Github/dstr-assignment/required/tripadvisor_hotel_reviews.csv";
     int reviewNumber = totalCount(filename);
 
-    filename = "C:/Github/dstr-assignment/required/positive-words.txt";
+    filename = "D:/Github/dstr-assignment/required/positive-words.txt";
     int totalPos = totalCount(filename);
 
-    filename = "C:/Github/dstr-assignment/required/negative-words.txt";
+    filename = "D:/Github/dstr-assignment/required/negative-words.txt";
     int totalNeg = totalCount(filename);
 
-    std::string **csvData = readCSV("C:/Github/dstr-assignment/required/tripadvisor_hotel_reviews.csv", numRows, numCols);
+    std::string **csvData = readCSV("D:/Github/dstr-assignment/required/tripadvisor_hotel_reviews.csv", numRows, numCols);
     countWordFrequencies(csvData, numRows, reader, positiveCounts, negativeCounts);
 
     int choice = 0;
+
+    int totalpositiveCount = 0;
+    int totalnegativeCount = 0;
+    reader.countWordMatches(totalpositiveCount, totalnegativeCount);
 
     while (true)
     {
@@ -466,8 +509,10 @@ int main()
             break;
         case 4:
             std::cout << "\nTotal Review Count: " << reviewNumber << std::endl;
-            std::cout << "\nTotal Positive Words: " << totalPos << std::endl;
-            std::cout << "\nTotal Negative Words: " << totalNeg << std::endl;
+            std::cout << "\nTotal Positive Words: " << reader.positiveRead << std::endl;
+            std::cout << "\nTotal Negative Words: " << reader.negativeRead << std::endl;
+            std::cout << "\nTotal flagged positive word in reviews: " << totalpositiveCount << std::endl;
+            std::cout << "\nTotal flagged negative word reviews: " << totalnegativeCount << std::endl;
 
             bubbleSort(reader.positiveWords, positiveCounts, reader.positiveRead);
             std::cout << "\nTop 10 Positive Words:\n";
