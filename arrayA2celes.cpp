@@ -401,20 +401,16 @@ void displayTopWords(std::string words[], int counts[], int size)
 
 void FileReader::countWordMatches(int &totalpositiveCount, int &totalnegativeCount)
 {
-    // Open the CSV file
     std::ifstream csvFile("D:/Github/dstr-assignment/required/tripadvisor_hotel_reviews.csv");
     std::string line;
 
-    // Read each line in the CSV
     while (std::getline(csvFile, line))
     {
         std::istringstream ss(line);
         std::string word;
 
-        // Read each word
         while (ss >> word)
         {
-            // Count positive matches
             for (int i = 0; i < positiveRead; i++)
             {
                 if (word == positiveWords[i])
@@ -423,7 +419,6 @@ void FileReader::countWordMatches(int &totalpositiveCount, int &totalnegativeCou
                 }
             }
 
-            // Count negative matches
             for (int i = 0; i < negativeRead; i++)
             {
                 if (word == negativeWords[i])
