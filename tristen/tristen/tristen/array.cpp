@@ -1,5 +1,10 @@
 #include "header.hpp"
-#include <cctype> // for isalpha
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <cstring>
+#include <iomanip>
+#include <map>
 // Arrays for positive and negative words
 string positiveWords[MAX_WORDS];
 string negativeWords[MAX_WORDS];
@@ -9,50 +14,19 @@ int posWordCount = 0, negWordCount = 0;
 string* reviews = nullptr;
 int* ratings = nullptr;
 int reviewCount = 0;
+string uniqueWords[MAX_WORDS];
+int wordFrequencies[MAX_WORDS];
+int uniqueWordCount = 0;
 
-// Frequency tracking arrays
-string frequencyWords[MAX_FREQUENCY_WORDS];
-int frequencyCount[MAX_FREQUENCY_WORDS] = { 0 }; // Initialize counts to 0
-int frequencySize = 0;  // Initialize the number of unique words found
-
-// Total counts for positive and negative words
-int totalPositiveWords = 0;
-int totalNegativeWords = 0;
-
-string sanitizeWord(const string& word) {
-    string sanitized;
-    for (char c : word) {
-        if (static_cast<unsigned char>(c) <= 127) { 
-            if (isalpha(c) || c == '\'') {
-                sanitized += c;
-            }
-        }
-    }
-    return sanitized;
-}
-
+// Function to load words from a file
 void loadWords(const string& filename, string arr[], int& count) {
     ifstream file(filename);
-    if (!file) {
-        cerr << "Could not open the file: " << filename << endl;
-        return;
-    }
-
     string word;
-    while (file >> word && count < MAX_WORDS) {
-        string sanitizedWord = sanitizeWord(word);
-        if (sanitizedWord.empty()) {
-            continue; 
-        }
-        if (isValidWord(word)) {
-            arr[count++] = word;
-        }
+    while (getline(file, word) && count < MAX_WORDS) {
+        arr[count++] = word;
     }
     file.close();
 }
-
-
-
 
 // Function to dynamically allocate and load all reviews and ratings from CSV
 void loadReviews(const string& filename) {
@@ -146,49 +120,26 @@ bool binarySearch(const string& word, const string arr[], int size) {
     return false;
 }
 
-
-bool isValidWord(const string& word) {
-    for (char c : word) {
-        // Check if the character is an ASCII character
-        if (static_cast<unsigned char>(c) <= 127) { // ASCII range
-            // Check if the character is alphabetic or an apostrophe
-            if (!isalpha(c) && c != '\'') {
-                return false;
-            }
-        }
-        else {
-            return false; // Invalid character detected
-        }
-    }
-    return true;
-}
-
-
-
+// Function to calculate sentiment score
 double calculateSentimentScore(string review) {
     int positiveCount = 0, negativeCount = 0;
     char* next_token = nullptr;
     char* token = strtok_s(&review[0], " ,.-", &next_token);
 
     while (token != nullptr) {
-        if (isValidWord(token)) {
-            updateWordFrequency(token);  // Update frequency
-            if (binarySearch(token, positiveWords, posWordCount)) {
-                positiveCount++;
-            }
-            if (binarySearch(token, negativeWords, negWordCount)) {
-                negativeCount++;
-            }
+        if (binarySearch(token, positiveWords, posWordCount)) {
+            positiveCount++;
+        }
+        if (binarySearch(token, negativeWords, negWordCount)) {
+            negativeCount++;
         }
         token = strtok_s(nullptr, " ,.-", &next_token);
     }
 
-    totalPositiveWords += positiveCount; // Update the total counts
-    totalNegativeWords += negativeCount; // Update the total counts
-
     int rawScore = positiveCount - negativeCount;
     int N = positiveCount + negativeCount;
 
+    // Prevent division by zero and NaN
     if (N == 0) {
         return 3.0; // Default to neutral if no words found
     }
@@ -198,8 +149,6 @@ double calculateSentimentScore(string review) {
 
     return 1 + 4 * normalizedScore;
 }
-
-
 
 // Insertion sort function to sort words (if needed)
 void insertionSort(string arr[], int size) {
@@ -214,35 +163,6 @@ void insertionSort(string arr[], int size) {
     }
 }
 
-// Function to update word frequency
-void updateWordFrequency(const string& word) {
-    // Check if the word is a positive word
-    if (binarySearch(word, positiveWords, posWordCount)) {
-        totalPositiveWords++;  // Increment the total positive words count
-    }
-    // Check if the word is a negative word
-    else if (binarySearch(word, negativeWords, negWordCount)) {
-        totalNegativeWords++;  // Increment the total negative words count
-    }
-
-    // Track word frequencies only for positive and negative words
-    for (int i = 0; i < frequencySize; i++) {
-        if (frequencyWords[i] == word) {
-            frequencyCount[i]++;
-            return;
-        }
-    }
-
-    // New unique word found
-    if (frequencySize < MAX_FREQUENCY_WORDS) {
-        frequencyWords[frequencySize] = word;
-        frequencyCount[frequencySize] = 1;
-        frequencySize++;
-    }
-}
-
-
-// Function to analyze and display reviews and their sentiment scores
 void analyzeReviews() {
     for (int i = 0; i < reviewCount; i++) {
         double sentimentScore = calculateSentimentScore(reviews[i]);
@@ -264,131 +184,106 @@ void analyzeReviews() {
         }
         cout << string(40, '-') << endl; // Separator line for readability
     }
-
-    displayTotalCounts(); // This should show frequencies
 }
 
-
-// Function to display the overall sentiment and frequency data
-void displayOverallSentiment() {
-    cout << "Total Positive Words: " << totalPositiveWords << endl;
-    cout << "Total Negative Words: " << totalNegativeWords << endl;
-}
-//void displayWordFrequency() {
-//    // Create temporary arrays to hold indices for sorting positive and negative word frequencies
-//    int positiveSortedIndices[MAX_FREQUENCY_WORDS];
-//    int negativeSortedIndices[MAX_FREQUENCY_WORDS];
-//
-//    int posCount = 0;
-//    int negCount = 0;
-//
-//    // Separate the words into positive and negative frequencies
-//    for (int i = 0; i < frequencySize; i++) {
-//        if (binarySearch(frequencyWords[i], positiveWords, posWordCount)) {
-//            positiveSortedIndices[posCount++] = i;
-//        }
-//        else if (binarySearch(frequencyWords[i], negativeWords, negWordCount)) {
-//            negativeSortedIndices[negCount++] = i;
-//        }
-//    }
-//
-//    // Sort positive frequencies
-//    for (int i = 0; i < posCount - 1; i++) {
-//        for (int j = 0; j < posCount - i - 1; j++) {
-//            if (frequencyCount[positiveSortedIndices[j]] > frequencyCount[positiveSortedIndices[j + 1]]) {
-//                // Swap the indices
-//                int temp = positiveSortedIndices[j];
-//                positiveSortedIndices[j] = positiveSortedIndices[j + 1];
-//                positiveSortedIndices[j + 1] = temp;
-//            }
-//        }
-//    }
-//
-//    // Sort negative frequencies
-//    for (int i = 0; i < negCount - 1; i++) {
-//        for (int j = 0; j < negCount - i - 1; j++) {
-//            if (frequencyCount[negativeSortedIndices[j]] > frequencyCount[negativeSortedIndices[j + 1]]) {
-//                // Swap the indices
-//                int temp = negativeSortedIndices[j];
-//                negativeSortedIndices[j] = negativeSortedIndices[j + 1];
-//                negativeSortedIndices[j + 1] = temp;
-//            }
-//        }
-//    }
-//
-//    // Output the sorted positive word frequencies
-//    cout << "Positive Word Frequencies (Ascending Order):" << endl;
-//    for (int i = 0; i < posCount; i++) {
-//        int index = positiveSortedIndices[i];
-//        cout << frequencyWords[index] << " = " << frequencyCount[index] << " times" << endl;
-//    }
-//
-//    cout << endl; // Separator between positive and negative frequencies
-//
-//    // Output the sorted negative word frequencies
-//    cout << "Negative Word Frequencies (Ascending Order):" << endl;
-//    for (int i = 0; i < negCount; i++) {
-//        int index = negativeSortedIndices[i];
-//        cout << frequencyWords[index] << " = " << frequencyCount[index] << " times" << endl;
-//    }
-//}
-
-int findIndex(const std::string& word, const std::string frequencyWords[], int size) {
-    for (int i = 0; i < size; i++) {
-        if (frequencyWords[i] == word) {
-            return i;  // Return the index if the word is found
+int findWordIndex(const string& word) {
+    for (int i = 0; i < uniqueWordCount; i++) {
+        if (uniqueWords[i] == word) {
+            return i;
         }
     }
-    return -1;  // Return -1 if the word is not found
+    return -1; // Word not found
 }
 
-void countWords(const std::string& review) {
-    std::istringstream iss(review);
-    std::string word;
-    while (iss >> word) {
-        // Convert word to lowercase or perform other normalizations if necessary
+// Function to calculate and display the overall sentiment of the reviews
+void calculateOverallSentiment() {
+    int totalPositiveCount = 0;
+    int totalNegativeCount = 0;
 
-        // Check if the word is in the positive or negative word list
-        if (binarySearch(word, positiveWords, posWordCount)) {
-            int index = findIndex(word, frequencyWords, frequencySize); // Function to find index
-            if (index != -1) {
-                frequencyCount[index]++;
-            }
-            else {
-                // If not found, add it to frequencyWords and initialize count
-                frequencyWords[frequencySize] = word;
-                frequencyCount[frequencySize] = 1;
-                frequencySize++;
-            }
-        }
-        else if (binarySearch(word, negativeWords, negWordCount)) {
-            int index = findIndex(word, frequencyWords, frequencySize); // Function to find index
-            if (index != -1) {
-                frequencyCount[index]++;
-            }
-            else {
-                // If not found, add it to frequencyWords and initialize count
-                frequencyWords[frequencySize] = word;
-                frequencyCount[frequencySize] = 1;
-                frequencySize++;
-            }
-        }
-    }
-}
+    // Traverse through all reviews to count positive/negative words and track their frequencies
+    for (int i = 0; i < reviewCount; i++) {
+        char* next_token = nullptr;
+        char* token = strtok_s(&reviews[i][0], " ,.-", &next_token);
 
-void displayTotalCounts() {
-    int totalPositive = 0;
-    int totalNegative = 0;
+        while (token != nullptr) {
+            string word(token);
 
-    for (int i = 0; i < frequencySize; i++) {
-        if (binarySearch(frequencyWords[i], positiveWords, posWordCount)) {
-            totalPositive += frequencyCount[i];
-        }
-        else if (binarySearch(frequencyWords[i], negativeWords, negWordCount)) {
-            totalNegative += frequencyCount[i];
+            // Count positive words
+            if (binarySearch(word, positiveWords, posWordCount)) {
+                totalPositiveCount++;
+
+                // Find the word in uniqueWords array or add it if not present
+                int wordIndex = findWordIndex(word);
+                if (wordIndex != -1) {
+                    wordFrequencies[wordIndex]++;
+                }
+                else {
+                    uniqueWords[uniqueWordCount] = word;
+                    wordFrequencies[uniqueWordCount] = 1;
+                    uniqueWordCount++;
+                }
+            }
+
+            // Count negative words
+            if (binarySearch(word, negativeWords, negWordCount)) {
+                totalNegativeCount++;
+
+                // Find the word in uniqueWords array or add it if not present
+                int wordIndex = findWordIndex(word);
+                if (wordIndex != -1) {
+                    wordFrequencies[wordIndex]++;
+                }
+                else {
+                    uniqueWords[uniqueWordCount] = word;
+                    wordFrequencies[uniqueWordCount] = 1;
+                    uniqueWordCount++;
+                }
+            }
+
+            token = strtok_s(nullptr, " ,.-", &next_token);
         }
     }
 
-    cout << "Total Positive Words: " << totalPositive << endl;
-    cout << "Total Negative Words: " << totalNegative << endl;
+    // Output total counts of positive and negative words
+    cout << "Total Reviews: " << reviewCount << endl;
+    cout << "Total Positive Word Count: " << totalPositiveCount << endl;
+    cout << "Total Negative Word Count: " << totalNegativeCount << endl;
+
+    // Sort words by frequency (insertion sort)
+    for (int i = 1; i < uniqueWordCount; i++) {
+        string keyWord = uniqueWords[i];
+        int keyFreq = wordFrequencies[i];
+        int j = i - 1;
+        while (j >= 0 && wordFrequencies[j] > keyFreq) {
+            uniqueWords[j + 1] = uniqueWords[j];
+            wordFrequencies[j + 1] = wordFrequencies[j];
+            j--;
+        }
+        uniqueWords[j + 1] = keyWord;
+        wordFrequencies[j + 1] = keyFreq;
+    }
+
+    // Display word frequencies
+    cout << "Word frequencies (ascending):" << endl;
+    for (int i = 0; i < uniqueWordCount; i++) {
+        cout << uniqueWords[i] << " = " << wordFrequencies[i] << " times" << endl;
+    }
+
+    // Display maximum and minimum used words
+    if (uniqueWordCount > 0) {
+        int maxFrequency = wordFrequencies[uniqueWordCount - 1];
+        int minFrequency = wordFrequencies[0];
+
+        // Maximum used word(s)
+        cout << "Maximum used word(s): " << endl;
+        for (int i = uniqueWordCount - 1; i >= 0 && wordFrequencies[i] == maxFrequency; i--) {
+            cout << uniqueWords[i] << " (" << wordFrequencies[i] << " times)" << endl;
+        }
+
+        // Minimum used word(s)
+        cout << "Minimum used word(s): " << endl;
+        for (int i = 0; i < uniqueWordCount && wordFrequencies[i] == minFrequency; i++) {
+            cout << uniqueWords[i] << " (" << wordFrequencies[i] << " times)" << endl;
+        }
+    }
 }
