@@ -322,6 +322,37 @@ void LinkedList :: selectionSort(WordNode*& head)
 	}
 }
 
+// Bubble sort function to sort the linked list 
+// according to word counts in ascending order
+void LinkedList::bubbleSort(WordNode*& head)
+{
+	if (head == nullptr) return; // if the list is empty, do nothing.
+
+	bool swapped;
+	WordNode* ptr1;
+	WordNode* lptr = nullptr; //pointer to the last node sorted
+
+	do
+	{
+		swapped = false;
+		ptr1 = head;
+
+		while (ptr1->next != lptr)
+		{
+			if (ptr1->count > ptr1->next->count)
+			{
+				// Swap the values (word and count) between adjacent nodes
+				swap(ptr1->word, ptr1->next->word);
+				swap(ptr1->count, ptr1->next->count);
+				swapped = true;
+			}
+			ptr1 = ptr1->next;
+		}
+		lptr = ptr1; //set the last sorted node
+	} 
+	while (swapped);
+}
+
 // WORKED
 // display overall sentiment results
 void LinkedList :: displaySentimentResult(int totalReviews, int totalPositive, int totalNegative, WordNode* positiveListHead, WordNode* negativeListHead)
@@ -369,4 +400,39 @@ void LinkedList :: displaySentimentResult(int totalReviews, int totalPositive, i
 		combinedListHead = combinedListHead->next;
 		delete temp;
 	}
+}
+
+// WORKED
+// measure execution time of a provided code block
+double LinkedList::measureExecutionTime(const std::function<void()>& func) {
+	// Check if the passed function is valid
+	if (!func) {
+		cerr << "Error: Provided function is null." << endl;
+		return 0.0; // Return 0 time if the function is null
+	}
+
+	// Record the start time
+	auto start = std::chrono::high_resolution_clock::now();
+
+	// Execute the passed function
+	func();
+
+	// Record the end time
+	auto end = std::chrono::high_resolution_clock::now();
+
+	// Calculate the duration
+	std::chrono::duration<double> duration = end - start;
+
+	// Return the time in seconds
+	return duration.count();
+}
+
+
+void LinkedList::displayMenu()
+{
+	cout << "Please select an option:" << endl;
+	cout << "1. Run the whole program (process all rows)" << endl;
+	cout << "2. Run for only one row" << endl;
+	cout << "3. Exit" << endl;
+	cout << "Enter your choice (1, 2, or 3): ";
 }

@@ -3,6 +3,7 @@
 #define LINKEDLIST_HPP
 using namespace std;
 #include <string>
+#include <functional>
 
 struct WordNode
 {
@@ -33,7 +34,10 @@ class LinkedList
 		void compareRatings(int userRating, double sentimentScore);
 		WordNode* mergeLists(WordNode* positiveHead, WordNode* negativeHead);
 		void selectionSort(WordNode*& head);
+		void bubbleSort(WordNode*& head);
 		void displaySentimentResult(int totalReviews, int totalPositive, int totalNegative, WordNode* positiveListHead, WordNode* negativeListHead);
+		double measureExecutionTime(const std::function<void()>& func);
+		void displayMenu();
 };
 
 #endif // !LINKEDLIST_HPP

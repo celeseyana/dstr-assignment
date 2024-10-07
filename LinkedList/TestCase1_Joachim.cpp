@@ -27,9 +27,9 @@ int main()
 	auto start = high_resolution_clock::now(); // start the timer
 
 	// load +ve and -ve words into linked list
-	testcase1.loadWords("files/positive-words.txt", positiveListHead);
-	testcase1.loadWords("files/negative-words.txt", negativeListHead);
-	testcase1.loadReviews("files/tripadvisor_hotel_reviews.csv", reviewHead);
+	testcase1.loadWords("required/positive-words.txt", positiveListHead);
+	testcase1.loadWords("required/negative-words.txt", negativeListHead);
+	testcase1.loadReviews("required/tripadvisor_hotel_reviews.csv", reviewHead);
 
 	testcase1.processReviews(reviewHead, positiveListHead, negativeListHead);
 
