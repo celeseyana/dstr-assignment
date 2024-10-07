@@ -127,10 +127,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="array1tristen.cpp" />
-    <ClCompile Include="TEST_PROGRAM_1.cpp" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="..\..\..\..\..\test\required\tripadvisor_hotel_reviews.csv" />
     <None Include="..\..\..\required\tripadvisor_hotel_reviews.csv" />
   </ItemGroup>
@@ -142,6 +138,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="arrays.hpp" />
+    <ClInclude Include="header.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="array.cpp" />
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
