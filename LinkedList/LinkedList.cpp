@@ -4,7 +4,10 @@
 #include <string>
 #include <sstream>
 #include <iomanip>
+#include <ctime>
+#include <chrono>
 using namespace std;
+using namespace std::chrono;
 
 // WORKED
 // load positive and negative words into linked list
@@ -24,66 +27,162 @@ void LinkedList :: loadWords(const string& filename, WordNode*& head)
 	while (file >> word)
 	{
 		// Create a new WordNode
-		WordNode* newNode = new WordNode{ word, 1, nullptr };
+		WordNode* newWordNode = new WordNode{ word, 0, nullptr };
 
 		if (head == nullptr)
 		{
-			head = newNode;
+			head = newWordNode;
+			current = head;
 		}
 		else
 		{
-			current->next = newNode;
+			current->next = newWordNode;
+			current = newWordNode;
 		}
-
-		current = newNode;
 	}
 
 	file.close();
 }
+
+// WIP
+// load all reviews into a linked list first
+void LinkedList :: loadReviews(const string& filename, ReviewNode*& reviewHead)
+{
+	ifstream file(filename);
+	if (!file.is_open())
+	{
+		cerr << "Error - Could not open review file - " << filename << endl;
+		return;
+	}
+
+	string line;
+	getline(file, line); // skip "Review" and "Rating" header
+
+	ReviewNode* current = nullptr;
+
+	while (getline(file, line))
+	{
+		size_t lastComma = line.find_last_of(",");
+		string review = line.substr(0, lastComma - 1);
+		int rating = stoi(line.substr(lastComma + 1));
+
+		ReviewNode* newNode = new ReviewNode{ review, rating, nullptr };
+
+		if (reviewHead == nullptr)
+		{
+			reviewHead = newNode;
+			current = reviewHead;
+		}
+		else
+		{
+			current->next = newNode;
+			current = newNode;
+		}
+	}
+
+	file.close();
+}
+
 
 // WORKED
 // insert word into linked list
 void LinkedList :: insertIntoLinkedList(WordNode*& head, const string& word)
 {
 	WordNode* temp = head;
+
+	// check if the word exist in the linked list
 	while (temp != nullptr)
 	{
 		if (temp->word == word)
 		{
 			temp->count++;
-			//cout << "Added / Updated word: " << word << " with count: " << temp->count << endl;
 			return;
 		}
 		temp = temp->next;
 	}
 	WordNode* newNode = new WordNode{ word, 1, head };
 	head = newNode;
-
-
 }
 
 // WORKED
 // count positive and negative words in review
-int LinkedList::countWordsInReview(const string& review, WordNode*& reviewNode, WordNode*& wordListHead)
+int LinkedList::countWordsInReview(const string& review, WordNode*& reviewList, WordNode*& wordListHead)
 {
 	int count = 0;
 	stringstream ss(review);
 	string word;
 
 	while (ss >> word) {
-		// remove punctuation
-		// word.erase(remove_if(word.begin(), word.end(), ::ispunct), word.end());
-
 		for (WordNode* node = wordListHead; node != nullptr; node = node->next) {
 			if (word == node->word) {
-				count++;
-				insertIntoLinkedList(reviewNode, word);
-				insertIntoLinkedList(wordListHead, word);
+				count++; // total +ve or -ve word count in review
+				insertIntoLinkedList(reviewList, word); // insert the word and its count into review list
+				node->count++; // update word count in main list
 				break;
 			}
 		}
 	}
 	return count;
+}
+
+// process the reviews and count num of +ve and -ve words
+void LinkedList::processReviews(ReviewNode* reviewHead, WordNode*& positiveListHead, WordNode*& negativeListHead)
+{
+	int totalReviews = 0, totalPositive = 0, totalNegative = 0;
+	const string SEPARATOR(60, '-');
+
+	for (ReviewNode* reviewNode = reviewHead; reviewNode != nullptr; reviewNode = reviewNode->next)
+	{
+		WordNode* reviewPositiveHead = nullptr;
+		WordNode* reviewNegativeHead = nullptr;
+
+		int positiveCount = countWordsInReview(reviewNode->review, reviewPositiveHead, positiveListHead);
+		int negativeCount = countWordsInReview(reviewNode->review, reviewNegativeHead, negativeListHead);
+
+		totalPositive += positiveCount;
+		totalNegative += negativeCount;
+
+		double sentimentScore = calculateSentimentScore(positiveCount, negativeCount);
+
+		// Display the details of the current review
+		cout << SEPARATOR << "\n\n"
+			<< "Index: " << totalReviews + 1 << "\n\n"
+			<< "User Rating: " << reviewNode->rating << "\n"
+			<< "Review: " << reviewNode->review << "\n\n"
+			<< "Positive Count = " << positiveCount << "\n";
+
+		displayWordList("Positive Words", reviewPositiveHead);
+
+		cout << "\nNegative Count = " << negativeCount << "\n";
+
+		displayWordList("Negative Words", reviewNegativeHead);
+
+		cout << setprecision(2) << "Sentiment Score (1 - 5) is " << sentimentScore
+			<< ", thus the rating should be equal to " << round(sentimentScore) << " ("
+			<< levelOfSentiment(sentimentScore) << ")" << "\n\n";
+
+		compareRatings(reviewNode->rating, sentimentScore);
+
+		while (reviewPositiveHead != nullptr)
+		{
+			WordNode* temp = reviewPositiveHead;
+			reviewPositiveHead = reviewPositiveHead->next;
+			delete temp;
+		}
+
+		while (reviewNegativeHead != nullptr)
+		{
+			WordNode* temp = reviewNegativeHead;
+			reviewNegativeHead = reviewNegativeHead->next;
+			delete temp;
+		}
+
+		totalReviews++;
+	}
+
+	cout << string(80, '=') << endl << endl;
+	displaySentimentResult(totalReviews, totalPositive, totalNegative, positiveListHead, negativeListHead);
+	cout << endl;
 }
 
 // WORKED
@@ -93,7 +192,7 @@ void LinkedList::displayWordList(const string& label, WordNode* head)
 	cout << label << ":" << endl;
 	for (WordNode* node = head; node != nullptr; node = node->next)
 	{
-		cout << " - " << node->word << " (" << node->count << " times)" << endl;
+		cout << " - " << node->word << " (" << node->count << " times)\n";
 	}
 }
 
@@ -157,11 +256,11 @@ void LinkedList::compareRatings(int userRating, double sentimentScore)
 
 	if (round(sentimentScore) == userRating)
 	{
-		cout << "User's subjective evaluation MATCHES the sentiment score provided by the analysis. There is a consistency between the sentiment score generated by the analysis and the user's evaluation of the sentiment." << endl;
+		cout << "User's subjective evaluation MATCHES the sentiment score provided by the analysis. There is a consistency between the sentiment score generated by the analysis and the user's evaluation of the sentiment.\n";
 	}
 	else
 	{
-		cout << "User's subjective evaluation DOES NOT MATCHES the sentiment score provided by the analysis. There is an inconsistency between the sentiment score generated by the analysis and the user's evaluation of the sentiment." << endl;
+		cout << "User's subjective evaluation DOES NOT MATCHES the sentiment score provided by the analysis. There is an inconsistency between the sentiment score generated by the analysis and the user's evaluation of the sentiment.\n";
 	}
 }
 
@@ -197,6 +296,7 @@ void LinkedList :: selectionSort(WordNode*& head)
 {
 	for (WordNode* i = head; i != nullptr; i = i->next)
 	{
+		// find the node with the lowest count in the usorted linked list
 		WordNode* minNode = i;
 		for (WordNode* j = i->next; j != nullptr; j = j->next)
 		{
@@ -205,8 +305,19 @@ void LinkedList :: selectionSort(WordNode*& head)
 				minNode = j;
 			}
 		}
-		swap(i->word, minNode->word);
-		swap(i->count, minNode->count);
+
+		// swap if a node with lower count is found
+		if (minNode != i)
+		{
+			string tempWord = i->word;
+			int tempCount = i->count;
+
+			i->word = minNode->word;
+			i->count = minNode->count;
+
+			minNode->word = tempWord;
+			minNode->count = tempCount;
+		}
 	}
 }
 
@@ -215,24 +326,24 @@ void LinkedList :: selectionSort(WordNode*& head)
 void LinkedList :: displaySentimentResult(int totalReviews, int totalPositive, int totalNegative, WordNode* positiveListHead, WordNode* negativeListHead)
 {
 	cout << "Total Reviews = " << totalReviews << endl;
-	cout << "Total Counts of Positive Words = " << totalPositive << endl;
-	cout << "Total Counts of Negative Words = " << totalNegative << endl;
+	cout << "Total Positive Words = " << totalPositive << endl;
+	cout << "Total Negative Words = " << totalNegative << endl;
 
-	/*cout << endl;
+	cout << endl;
 
-	cout << "Positive Words Frequency:" << endl;
+	cout << "Positive Words Frequency:\n";
 	for (WordNode* node = positiveListHead; node != nullptr; node = node->next)
 	{
-		cout << setw(15) << node->word << " = " << node->count << " times" << endl;
+		cout << setw(15) << node->word << " = " << node->count << " times\n";
 	}
 
 	cout << endl;
 
-	cout << "Negative Words Frequency:" << endl;
+	cout << "Negative Words Frequency:\n";
 	for (WordNode* node = negativeListHead; node != nullptr; node = node->next)
 	{
-		cout << setw(15) << node->word << " = " << node->count << " times" << endl;
-	}*/
+		cout << setw(15) << node->word << " = " << node->count << " times\n";
+	}
 
 	// combine +ve and -ve linked list
 	WordNode* combinedListHead = mergeLists(positiveListHead, negativeListHead);
@@ -241,11 +352,13 @@ void LinkedList :: displaySentimentResult(int totalReviews, int totalPositive, i
 	selectionSort(combinedListHead);
 
 	// display result
-	cout << "Frequency of each word used in overall reviews, listed in ascending order based on frequency:" << endl << endl;
+	cout << "Frequency of each word used in overall reviews (ascending order)\n\n";
 
 	for (WordNode* node = combinedListHead; node != nullptr; node = node->next)
 	{
-		cout << node->word << " = " << node->count << " times " << endl;
+		if (node->count > 0) {
+			cout << node->word << " = " << node->count << " times\n";
+		}
 	}
 
 	// clean up the combined list
