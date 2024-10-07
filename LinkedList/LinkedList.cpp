@@ -251,8 +251,9 @@ string LinkedList::levelOfSentiment(double sentimentScore)
 // compare rating given by user with sentiment calculation
 void LinkedList::compareRatings(int userRating, double sentimentScore)
 {
-	cout << "Sentiment Score (1 - 5) = " << round(sentimentScore) << endl;
-	cout << "Rating given by user = " << userRating << endl;
+	cout << "Sentiment Score (1 - 5) = " << round(sentimentScore) << "\n";
+	cout << "Rating given by user = " << userRating << "\n";
+	cout << "Analysis Output: \n";
 
 	if (round(sentimentScore) == userRating)
 	{
