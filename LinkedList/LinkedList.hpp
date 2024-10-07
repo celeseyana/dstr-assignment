@@ -11,12 +11,21 @@ struct WordNode
 	WordNode* next;
 };
 
+struct ReviewNode
+{
+	string review;
+	int rating;
+	ReviewNode* next;
+};
+
 class LinkedList
 {
 	public:
 		void loadWords(const string& filename, WordNode*& head);
+		void loadReviews(const string& filename, ReviewNode*& reviewHead);
 		void insertIntoLinkedList(WordNode*& head, const string& word);
 		int countWordsInReview(const string& review, WordNode*& reviewNode, WordNode*& wordListHead);
+		void processReviews(ReviewNode* reviewHead, WordNode*& positiveListHead, WordNode*& negativeListHead);
 		void displayWordList(const string& label, WordNode* head);
 		int convertStringRating(string ratingStr);
 		double calculateSentimentScore(int positiveCount, int negativeCount);;
