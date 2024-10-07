@@ -26,7 +26,7 @@ void displayMenu()
 
 void FileReader::readNegative(const std::string &filename)
 {
-    std::ifstream file("D:/Github/dstr-assignment/required/negative-words.txt");
+    std::ifstream file("C:/Github/dstr-assignment/required/negative-words.txt");
 
     if (file.is_open())
     {
@@ -47,7 +47,7 @@ void FileReader::readNegative(const std::string &filename)
 
 void FileReader::readPositive(const std::string &filename)
 {
-    std::ifstream file("D:/Github/dstr-assignment/required/positive-words.txt");
+    std::ifstream file("C:/Github/dstr-assignment/required/positive-words.txt");
 
     if (file.is_open())
     {
@@ -401,7 +401,7 @@ void displayTopWords(std::string words[], int counts[], int size)
 
 void FileReader::countWordMatches(int &totalpositiveCount, int &totalnegativeCount)
 {
-    std::ifstream csvFile("D:/Github/dstr-assignment/required/tripadvisor_hotel_reviews.csv");
+    std::ifstream csvFile("C:/Github/dstr-assignment/required/tripadvisor_hotel_reviews.csv");
     std::string line;
 
     while (std::getline(csvFile, line))
@@ -439,23 +439,23 @@ int main()
 
     FileReader reader;
 
-    reader.readNegative("D:/Github/dstr-assignment/required/negative-words.txt");
-    reader.readPositive("D:/Github/dstr-assignment/required/positive-words.txt");
+    reader.readNegative("C:/Github/dstr-assignment/required/negative-words.txt");
+    reader.readPositive("C:/Github/dstr-assignment/required/positive-words.txt");
     int *positiveCounts = new int[reader.positiveRead];
     int *negativeCounts = new int[reader.negativeRead];
 
     std::string filename;
 
-    filename = "D:/Github/dstr-assignment/required/tripadvisor_hotel_reviews.csv";
+    filename = "C:/Github/dstr-assignment/required/tripadvisor_hotel_reviews.csv";
     int reviewNumber = totalCount(filename);
 
-    filename = "D:/Github/dstr-assignment/required/positive-words.txt";
+    filename = "C:/Github/dstr-assignment/required/positive-words.txt";
     int totalPos = totalCount(filename);
 
-    filename = "D:/Github/dstr-assignment/required/negative-words.txt";
+    filename = "C:/Github/dstr-assignment/required/negative-words.txt";
     int totalNeg = totalCount(filename);
 
-    std::string **csvData = readCSV("D:/Github/dstr-assignment/required/tripadvisor_hotel_reviews.csv", numRows, numCols);
+    std::string **csvData = readCSV("C:/Github/dstr-assignment/required/tripadvisor_hotel_reviews.csv", numRows, numCols);
     countWordFrequencies(csvData, numRows, reader, positiveCounts, negativeCounts);
 
     int choice = 0;
