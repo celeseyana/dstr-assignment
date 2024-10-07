@@ -1,5 +1,5 @@
-#ifndef HOTEL_FEEDBACK_H
-#define HOTEL_FEEDBACK_H
+#ifndef HEADER
+#define HEADER
 
 #include <string>
 #include <iostream>
@@ -69,4 +69,4 @@ void insertionSort(string arr[], int size);
 void analyzeReviews();
 void calculateOverallSentiment();
 int findWordIndex(const string& word);
-#endif // HOTEL_FEEDBACK_H
+#endif HEADER

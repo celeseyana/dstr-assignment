@@ -1,4 +1,5 @@
-﻿  TESTPROGRAM1.cpp
-  TESTPROGRAM2.cpp
-  Generating Code...
+﻿  array.cpp
+D:\Github\dstr-assignment\dstr-assignment\tristen\tristen\tristen\array.cpp(94,40): warning C4101: 'e': unreferenced local variable
+D:\Github\dstr-assignment\dstr-assignment\tristen\tristen\tristen\array.cpp(98,36): warning C4101: 'e': unreferenced local variable
+D:\Github\dstr-assignment\dstr-assignment\tristen\tristen\tristen\array.cpp(550,24): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
   tristen.vcxproj -> D:\Github\dstr-assignment\dstr-assignment\tristen\tristen\x64\Debug\tristen.exe

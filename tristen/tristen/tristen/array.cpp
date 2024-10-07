@@ -679,7 +679,7 @@ void displayTopWords(std::string words[], int counts[], int size)
 
 void FileReader::countWordMatches(int& totalpositiveCount, int& totalnegativeCount)
 {
-    std::ifstream csvFile("C:/Github/dstr-assignment/required/tripadvisor_hotel_reviews.csv");
+    std::ifstream csvFile("D:/Github/dstr-assignment/dstr-assignment/tristen/tristen/tristen/required/tripadvisor_hotel_reviews.csv");
     std::string line;
 
     while (std::getline(csvFile, line))
