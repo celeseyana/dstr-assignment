@@ -1,2 +1,13 @@
-﻿  linkedlist_jeckson.cpp
-  JECKSON.vcxproj -> C:\Users\liewj\source\repos\jeckson\x64\Debug\JECKSON.exe
+﻿  Joachim_Test.cpp
+/Desktop/backup/Joachim_Test.cpp(1,1): error C1083: Cannot open source file: '..\..\..\..\Desktop\backup\Joachim_Test.cpp': No such file or directory
+  (compiling source file '/Desktop/backup/Joachim_Test.cpp')
+  
+  LinkedList.cpp
+/Desktop/backup/LinkedList.cpp(1,1): error C1083: Cannot open source file: '..\..\..\..\Desktop\backup\LinkedList.cpp': No such file or directory
+  (compiling source file '/Desktop/backup/LinkedList.cpp')
+  
+  linkedlist_jeckson.cpp
+/Desktop/backup/linkedlist_jeckson.cpp(1,1): error C1083: Cannot open source file: '..\..\..\..\Desktop\backup\linkedlist_jeckson.cpp': No such file or directory
+  (compiling source file '/Desktop/backup/linkedlist_jeckson.cpp')
+  
+  Generating Code...
