@@ -1,6 +1,6 @@
 ﻿  array.cpp
+D:\Github\dstr-assignment\dstr-assignment\tristen\tristen\tristen\array.cpp(124,40): warning C4101: 'e': unreferenced local variable
+D:\Github\dstr-assignment\dstr-assignment\tristen\tristen\tristen\array.cpp(128,36): warning C4101: 'e': unreferenced local variable
   main.cpp
-D:\Github\dstr-assignment\dstr-assignment\tristen\tristen\tristen\array.cpp(129,40): warning C4101: 'e': unreferenced local variable
-D:\Github\dstr-assignment\dstr-assignment\tristen\tristen\tristen\array.cpp(133,36): warning C4101: 'e': unreferenced local variable
   Generating Code...
   tristen.vcxproj -> D:\Github\dstr-assignment\dstr-assignment\tristen\tristen\x64\Debug\tristen.exe

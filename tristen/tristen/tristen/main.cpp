@@ -5,7 +5,7 @@ int main() {
     auto start = high_resolution_clock::now();
     loadWords("D:/Github/dstr-assignment/dstr-assignment/tristen/tristen/tristen/required/positive-words.txt", positiveWords, posWordCount);
     loadWords("D:/Github/dstr-assignment/dstr-assignment/tristen/tristen/tristen/required/negative-words.txt", negativeWords, negWordCount);
-
+    
     // Sort the word lists using insertion sort for binary search efficiency
     insertionSort(positiveWords, posWordCount);
     insertionSort(negativeWords, negWordCount);

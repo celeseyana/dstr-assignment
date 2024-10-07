@@ -22,9 +22,7 @@ int totalNegativeWords = 0;
 string sanitizeWord(const string& word) {
     string sanitized;
     for (char c : word) {
-        // Check if the character is an ASCII character
-        if (static_cast<unsigned char>(c) <= 127) { // ASCII range
-            // Allow alphabetic characters and apostrophes
+        if (static_cast<unsigned char>(c) <= 127) { 
             if (isalpha(c) || c == '\'') {
                 sanitized += c;
             }
@@ -44,13 +42,10 @@ void loadWords(const string& filename, string arr[], int& count) {
     while (file >> word && count < MAX_WORDS) {
         string sanitizedWord = sanitizeWord(word);
         if (sanitizedWord.empty()) {
-            continue; // Skip empty sanitized words
+            continue; 
         }
-        if (isValidWord(sanitizedWord)) {
-            arr[count++] = sanitizedWord;
-        }
-        else {
-            cout << "Invalid word detected: " << sanitizedWord << endl; // Debugging line
+        if (isValidWord(word)) {
+            arr[count++] = word;
         }
     }
     file.close();
@@ -270,7 +265,6 @@ void analyzeReviews() {
         cout << string(40, '-') << endl; // Separator line for readability
     }
 
-    displayOverallSentiment(); // This should show total counts
     displayTotalCounts(); // This should show frequencies
 }
 
@@ -359,17 +353,20 @@ void countWords(const std::string& review) {
             int index = findIndex(word, frequencyWords, frequencySize); // Function to find index
             if (index != -1) {
                 frequencyCount[index]++;
-            } else {
+            }
+            else {
                 // If not found, add it to frequencyWords and initialize count
                 frequencyWords[frequencySize] = word;
                 frequencyCount[frequencySize] = 1;
                 frequencySize++;
             }
-        } else if (binarySearch(word, negativeWords, negWordCount)) {
+        }
+        else if (binarySearch(word, negativeWords, negWordCount)) {
             int index = findIndex(word, frequencyWords, frequencySize); // Function to find index
             if (index != -1) {
                 frequencyCount[index]++;
-            } else {
+            }
+            else {
                 // If not found, add it to frequencyWords and initialize count
                 frequencyWords[frequencySize] = word;
                 frequencyCount[frequencySize] = 1;
@@ -386,7 +383,8 @@ void displayTotalCounts() {
     for (int i = 0; i < frequencySize; i++) {
         if (binarySearch(frequencyWords[i], positiveWords, posWordCount)) {
             totalPositive += frequencyCount[i];
-        } else if (binarySearch(frequencyWords[i], negativeWords, negWordCount)) {
+        }
+        else if (binarySearch(frequencyWords[i], negativeWords, negWordCount)) {
             totalNegative += frequencyCount[i];
         }
     }
