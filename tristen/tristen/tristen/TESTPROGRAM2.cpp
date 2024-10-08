@@ -44,7 +44,9 @@ int main()
             FileReader reader;
 
             reader.readNegative("D:/Github/dstr-assignment/dstr-assignment/tristen/tristen/tristen/required/negative-words.txt");
+            cout << "Loading..." << endl;
             reader.readPositive("D:/Github/dstr-assignment/dstr-assignment/tristen/tristen/tristen/required/positive-words.txt");
+            cout << "More loading..." << endl;
             int* positiveCounts = new int[reader.positiveRead];
             int* negativeCounts = new int[reader.negativeRead];
 
@@ -52,21 +54,26 @@ int main()
 
             filename = "D:/Github/dstr-assignment/dstr-assignment/tristen/tristen/tristen/required/tripadvisor_hotel_reviews.csv";
             int reviewNumber = totalCount(filename);
+            cout << "Loading.." << endl;
 
             filename = "D:/Github/dstr-assignment/dstr-assignment/tristen/tristen/tristen/required/positive-words.txt";
             int totalPos = totalCount(filename);
+            cout << "More loading.." << endl;
 
             filename = "D:/Github/dstr-assignment/dstr-assignment/tristen/tristen/tristen/required/negative-words.txt";
             int totalNeg = totalCount(filename);
+            cout << "Almost done..." << endl;
 
             std::string** csvData = readCSV("D:/Github/dstr-assignment/dstr-assignment/tristen/tristen/tristen/required/tripadvisor_hotel_reviews.csv", numRows, numCols);
             countWordFrequencies(csvData, numRows, reader, positiveCounts, negativeCounts);
+            cout << "Surely.." << endl;
 
             int choice = 0;
 
             int totalpositiveCount = 0;
             int totalnegativeCount = 0;
             reader.countWordMatches(totalpositiveCount, totalnegativeCount);
+            cout << "Please.." << endl;
 
             while (true)
             {

@@ -285,6 +285,14 @@ void calculateOverallSentiment() {
 }
 
 //----------------------------------------------ONG ZI YANG-----------------------------------------------------------
+#include "arrays.hpp"
+#include <iostream>
+#include <fstream>
+#include <cctype>
+#include <limits>
+#include <string>
+#include <cstring>
+
 FileReader::FileReader()
 {
     negativeRead = 0;
@@ -445,28 +453,57 @@ void printCSV(std::string** data, int numRows, int numCols)
     }
 }
 
-void countWordsInRow(const std::string& row, std::string* positiveWords, int positiveSize, std::string* negativeWords, int negativeSize, int& positiveCount, int& negativeCount) // THIS GUY IS THE LINEAR SEARCH
+void countWordsInRow(const std::string& row, std::string* positiveWords, int positiveSize, std::string* negativeWords, int negativeSize, int& positiveCount, int& negativeCount)
 {
-    std::istringstream stream(row);
     std::string word;
 
-    while (stream >> word)
+    for (char c : row)
     {
-        for (int i = 0; i < positiveSize; ++i) // THIS GUY IS THE LINEAR SEARCH
+        if (isalnum(static_cast<unsigned char>(c)))
+        {
+            word += c;
+        }
+        else if (!word.empty())
+        {
+            for (int i = 0; i < positiveSize; ++i)
+            {
+                if (word == positiveWords[i])
+                {
+                    positiveCount++;
+                    break;
+                }
+            }
+
+            for (int i = 0; i < negativeSize; ++i)
+            {
+                if (word == negativeWords[i])
+                {
+                    negativeCount++;
+                    break;
+                }
+            }
+
+            word = "";
+        }
+    }
+
+    if (!word.empty())
+    {
+        for (int i = 0; i < positiveSize; ++i)
         {
             if (word == positiveWords[i])
             {
                 positiveCount++;
-                break; // kill process
+                break;
             }
         }
 
-        for (int i = 0; i < negativeSize; ++i) // THIS GUY IS THE LINEAR SEARCH
+        for (int i = 0; i < negativeSize; ++i)
         {
             if (word == negativeWords[i])
             {
                 negativeCount++;
-                break; // kill process
+                break;
             }
         }
     }
@@ -622,12 +659,37 @@ void countWordFrequencies(std::string** data, int numRows, FileReader& reader, i
             row += data[i][j] + " ";
         }
 
-        std::istringstream stream(row);
-        std::string word;
-
-        while (stream >> word)
+        std::string word = "";
+        for (char c : row)
         {
-            // pos check
+            if (isalnum(static_cast<unsigned char>(c)))
+            {
+                word += c;
+            }
+            else if (!word.empty())
+            {
+                for (int j = 0; j < reader.positiveRead; ++j)
+                {
+                    if (word == reader.positiveWords[j])
+                    {
+                        positiveCounts[j]++;
+                    }
+                }
+
+                for (int j = 0; j < reader.negativeRead; ++j)
+                {
+                    if (word == reader.negativeWords[j])
+                    {
+                        negativeCounts[j]++;
+                    }
+                }
+
+                word = "";
+            }
+        }
+
+        if (!word.empty())
+        {
             for (int j = 0; j < reader.positiveRead; ++j)
             {
                 if (word == reader.positiveWords[j])
@@ -636,7 +698,6 @@ void countWordFrequencies(std::string** data, int numRows, FileReader& reader, i
                 }
             }
 
-            // neg check
             for (int j = 0; j < reader.negativeRead; ++j)
             {
                 if (word == reader.negativeWords[j])
@@ -681,13 +742,40 @@ void FileReader::countWordMatches(int& totalpositiveCount, int& totalnegativeCou
 {
     std::ifstream csvFile("D:/Github/dstr-assignment/dstr-assignment/tristen/tristen/tristen/required/tripadvisor_hotel_reviews.csv");
     std::string line;
+    std::string word;
 
     while (std::getline(csvFile, line))
     {
-        std::istringstream ss(line);
-        std::string word;
+        word = "";
+        for (char c : line)
+        {
+            if (isalnum(static_cast<unsigned char>(c)))
+            {
+                word += c;
+            }
+            else if (!word.empty())
+            {
+                for (int i = 0; i < positiveRead; i++)
+                {
+                    if (word == positiveWords[i])
+                    {
+                        totalpositiveCount++;
+                    }
+                }
 
-        while (ss >> word)
+                for (int i = 0; i < negativeRead; i++)
+                {
+                    if (word == negativeWords[i])
+                    {
+                        totalnegativeCount++;
+                    }
+                }
+
+                word = "";
+            }
+        }
+
+        if (!word.empty())
         {
             for (int i = 0; i < positiveRead; i++)
             {
