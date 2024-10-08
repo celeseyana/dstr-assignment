@@ -1,39 +1,36 @@
 #include "header.hpp"
 
+
 // Arrays for positive and negative words
 string positiveWords[MAX_WORDS];
 string negativeWords[MAX_WORDS];
 int posWordCount = 0, negWordCount = 0;
 
 // Dynamically allocated arrays for reviews and ratings
-string *reviews = nullptr;
-int *ratings = nullptr;
+string* reviews = nullptr;
+int* ratings = nullptr;
 int reviewCount = 0;
 string uniqueWords[MAX_WORDS];
 int wordFrequencies[MAX_WORDS];
 int uniqueWordCount = 0;
 
 // Function to load words from a file
-void loadWords(const string &filename, string arr[], int &count)
-{
+void loadWords(const string& filename, string arr[], int& count) {
     ifstream file(filename);
     string word;
-    while (getline(file, word) && count < MAX_WORDS)
-    {
+    while (getline(file, word) && count < MAX_WORDS) {
         arr[count++] = word;
     }
     file.close();
 }
 
 // Function to dynamically allocate and load all reviews and ratings from CSV
-void loadReviews(const string &filename)
-{
+void loadReviews(const string& filename) {
     ifstream file(filename);
     string line;
 
     // Skip the header
-    if (!getline(file, line))
-    {
+    if (!getline(file, line)) {
         cout << "Error: Could not read header from file." << endl;
         return;
     }
@@ -45,16 +42,14 @@ void loadReviews(const string &filename)
     reviewCount = 0;
 
     // Read each line and store the review and rating
-    while (getline(file, line))
-    {
+    while (getline(file, line)) {
         // Find the last comma to separate the rating from the review
         size_t lastCommaPos = line.find_last_of(',');
 
         // Check if there's a comma in the line
-        if (lastCommaPos == string::npos)
-        {
+        if (lastCommaPos == string::npos) {
             cout << "Error: No rating found in line: " << line << endl;
-            continue; // Skip this line
+            continue;  // Skip this line
         }
 
         // Extract the review and rating
@@ -65,29 +60,25 @@ void loadReviews(const string &filename)
         ratingStr.erase(remove_if(ratingStr.begin(), ratingStr.end(), ::isspace), ratingStr.end());
 
         // Check if the rating string is not empty
-        if (ratingStr.empty())
-        {
+        if (ratingStr.empty()) {
             cout << "Error: Empty rating found in line: " << line << endl;
-            continue; // Skip this line
+            continue;  // Skip this line
         }
 
-        try
-        {
-            int rating = stoi(ratingStr); // Convert the rating string to an integer
+        try {
+            int rating = stoi(ratingStr);  // Convert the rating string to an integer
             reviews[reviewCount] = review;
             ratings[reviewCount] = rating;
             reviewCount++;
 
             // Resize arrays if capacity is reached
-            if (reviewCount == capacity)
-            {
+            if (reviewCount == capacity) {
                 capacity *= 2;
-                string *tempReviews = new string[capacity];
-                int *tempRatings = new int[capacity];
+                string* tempReviews = new string[capacity];
+                int* tempRatings = new int[capacity];
 
                 // Copy old data
-                for (int i = 0; i < reviewCount; i++)
-                {
+                for (int i = 0; i < reviewCount; i++) {
                     tempReviews[i] = reviews[i];
                     tempRatings[i] = ratings[i];
                 }
@@ -100,15 +91,13 @@ void loadReviews(const string &filename)
                 ratings = tempRatings;
             }
         }
-        catch (const invalid_argument &e)
-        {
+        catch (const invalid_argument& e) {
             cout << "Error: Invalid rating found in line: " << line << endl;
-            continue; // Skip this line
+            continue;  // Skip this line
         }
-        catch (const out_of_range &e)
-        {
+        catch (const out_of_range& e) {
             cout << "Error: Rating out of range in line: " << line << endl;
-            continue; // Skip this line
+            continue;  // Skip this line
         }
     }
 
@@ -116,37 +105,28 @@ void loadReviews(const string &filename)
 }
 
 // Binary search for word lookup
-bool binarySearch(const string &word, const string arr[], int size)
-{
+bool binarySearch(const string& word, const string arr[], int size) {
     int low = 0, high = size - 1;
-    while (low <= high)
-    {
+    while (low <= high) {
         int mid = (low + high) / 2;
-        if (arr[mid] == word)
-            return true;
-        if (arr[mid] < word)
-            low = mid + 1;
-        else
-            high = mid - 1;
+        if (arr[mid] == word) return true;
+        if (arr[mid] < word) low = mid + 1;
+        else high = mid - 1;
     }
     return false;
 }
 
 // Function to calculate sentiment score
-double calculateSentimentScore(string review)
-{
+double calculateSentimentScore(string review) {
     int positiveCount = 0, negativeCount = 0;
-    char *next_token = nullptr;
-    char *token = strtok_s(&review[0], " ,.-", &next_token);
+    char* next_token = nullptr;
+    char* token = strtok_s(&review[0], " ,.-", &next_token);
 
-    while (token != nullptr)
-    {
-        if (binarySearch(token, positiveWords, posWordCount))
-        {
+    while (token != nullptr) {
+        if (binarySearch(token, positiveWords, posWordCount)) {
             positiveCount++;
         }
-        if (binarySearch(token, negativeWords, negWordCount))
-        {
+        if (binarySearch(token, negativeWords, negWordCount)) {
             negativeCount++;
         }
         token = strtok_s(nullptr, " ,.-", &next_token);
@@ -156,8 +136,7 @@ double calculateSentimentScore(string review)
     int N = positiveCount + negativeCount;
 
     // Prevent division by zero and NaN
-    if (N == 0)
-    {
+    if (N == 0) {
         return 3.0; // Default to neutral if no words found
     }
 
@@ -168,14 +147,11 @@ double calculateSentimentScore(string review)
 }
 
 // Insertion sort function to sort words (if needed)
-void insertionSort(string arr[], int size)
-{
-    for (int i = 1; i < size; i++)
-    {
+void insertionSort(string arr[], int size) {
+    for (int i = 1; i < size; i++) {
         string key = arr[i];
         int j = i - 1;
-        while (j >= 0 && arr[j] > key)
-        {
+        while (j >= 0 && arr[j] > key) {
             arr[j + 1] = arr[j];
             j--;
         }
@@ -183,39 +159,32 @@ void insertionSort(string arr[], int size)
     }
 }
 
-void analyzeReviews()
-{
-    for (int i = 0; i < reviewCount; i++)
-    {
+void analyzeReviews() {
+    for (int i = 0; i < reviewCount; i++) {
         double sentimentScore = calculateSentimentScore(reviews[i]);
 
         // Output the review index, review text, user rating, and sentiment score
-        cout << "Review Index: " << i + 1 << endl;                                         // 1-based index
-        cout << "Review: " << reviews[i] << endl;                                          // Full review text
-        cout << "User Rating: " << ratings[i] << endl;                                     // User rating
+        cout << "Review Index: " << i + 1 << endl; // 1-based index
+        cout << "Review: " << reviews[i] << endl; // Full review text
+        cout << "User Rating: " << ratings[i] << endl; // User rating
         cout << "Sentiment Score: " << fixed << setprecision(2) << sentimentScore << endl; // Formatted sentiment score
-        cout << endl;                                                                      // Additional space between reviews
+        cout << endl; // Additional space between reviews
 
         // Sentiment score analysis
         cout << "Sentiment Score Analysis: ";
-        if (abs(ratings[i] - sentimentScore) <= 0.5)
-        {
+        if (abs(ratings[i] - sentimentScore) <= 0.5) {
             cout << "Rating matches sentiment analysis." << endl;
         }
-        else
-        {
+        else {
             cout << "Rating does not match sentiment analysis." << endl;
         }
         cout << string(40, '-') << endl; // Separator line for readability
     }
 }
 
-int findWordIndex(const string &word)
-{
-    for (int i = 0; i < uniqueWordCount; i++)
-    {
-        if (uniqueWords[i] == word)
-        {
+int findWordIndex(const string& word) {
+    for (int i = 0; i < uniqueWordCount; i++) {
+        if (uniqueWords[i] == word) {
             return i;
         }
     }
@@ -223,34 +192,28 @@ int findWordIndex(const string &word)
 }
 
 // Function to calculate and display the overall sentiment of the reviews
-void calculateOverallSentiment()
-{
+void calculateOverallSentiment() {
     int totalPositiveCount = 0;
     int totalNegativeCount = 0;
 
     // Traverse through all reviews to count positive/negative words and track their frequencies
-    for (int i = 0; i < reviewCount; i++)
-    {
-        char *next_token = nullptr;
-        char *token = strtok_s(&reviews[i][0], " ,.-", &next_token);
+    for (int i = 0; i < reviewCount; i++) {
+        char* next_token = nullptr;
+        char* token = strtok_s(&reviews[i][0], " ,.-", &next_token);
 
-        while (token != nullptr)
-        {
+        while (token != nullptr) {
             string word(token);
 
             // Count positive words
-            if (binarySearch(word, positiveWords, posWordCount))
-            {
+            if (binarySearch(word, positiveWords, posWordCount)) {
                 totalPositiveCount++;
 
                 // Find the word in uniqueWords array or add it if not present
                 int wordIndex = findWordIndex(word);
-                if (wordIndex != -1)
-                {
+                if (wordIndex != -1) {
                     wordFrequencies[wordIndex]++;
                 }
-                else
-                {
+                else {
                     uniqueWords[uniqueWordCount] = word;
                     wordFrequencies[uniqueWordCount] = 1;
                     uniqueWordCount++;
@@ -258,18 +221,15 @@ void calculateOverallSentiment()
             }
 
             // Count negative words
-            if (binarySearch(word, negativeWords, negWordCount))
-            {
+            if (binarySearch(word, negativeWords, negWordCount)) {
                 totalNegativeCount++;
 
                 // Find the word in uniqueWords array or add it if not present
                 int wordIndex = findWordIndex(word);
-                if (wordIndex != -1)
-                {
+                if (wordIndex != -1) {
                     wordFrequencies[wordIndex]++;
                 }
-                else
-                {
+                else {
                     uniqueWords[uniqueWordCount] = word;
                     wordFrequencies[uniqueWordCount] = 1;
                     uniqueWordCount++;
@@ -286,13 +246,11 @@ void calculateOverallSentiment()
     cout << "Total Negative Word Count: " << totalNegativeCount << endl;
 
     // Sort words by frequency (insertion sort)
-    for (int i = 1; i < uniqueWordCount; i++)
-    {
+    for (int i = 1; i < uniqueWordCount; i++) {
         string keyWord = uniqueWords[i];
         int keyFreq = wordFrequencies[i];
         int j = i - 1;
-        while (j >= 0 && wordFrequencies[j] > keyFreq)
-        {
+        while (j >= 0 && wordFrequencies[j] > keyFreq) {
             uniqueWords[j + 1] = uniqueWords[j];
             wordFrequencies[j + 1] = wordFrequencies[j];
             j--;
@@ -303,28 +261,24 @@ void calculateOverallSentiment()
 
     // Display word frequencies
     cout << "Word frequencies (ascending):" << endl;
-    for (int i = 0; i < uniqueWordCount; i++)
-    {
+    for (int i = 0; i < uniqueWordCount; i++) {
         cout << uniqueWords[i] << " = " << wordFrequencies[i] << " times" << endl;
     }
 
     // Display maximum and minimum used words
-    if (uniqueWordCount > 0)
-    {
+    if (uniqueWordCount > 0) {
         int maxFrequency = wordFrequencies[uniqueWordCount - 1];
         int minFrequency = wordFrequencies[0];
 
         // Maximum used word(s)
         cout << "Maximum used word(s): " << endl;
-        for (int i = uniqueWordCount - 1; i >= 0 && wordFrequencies[i] == maxFrequency; i--)
-        {
+        for (int i = uniqueWordCount - 1; i >= 0 && wordFrequencies[i] == maxFrequency; i--) {
             cout << uniqueWords[i] << " (" << wordFrequencies[i] << " times)" << endl;
         }
 
         // Minimum used word(s)
         cout << "Minimum used word(s): " << endl;
-        for (int i = 0; i < uniqueWordCount && wordFrequencies[i] == minFrequency; i++)
-        {
+        for (int i = 0; i < uniqueWordCount && wordFrequencies[i] == minFrequency; i++) {
             cout << uniqueWords[i] << " (" << wordFrequencies[i] << " times)" << endl;
         }
     }
@@ -348,7 +302,7 @@ void displayMenu()
     std::cout << "5. Exit\n";
 }
 
-void FileReader::readNegative(const std::string &filename)
+void FileReader::readNegative(const std::string& filename)
 {
     std::ifstream file("D:/Github/dstr-assignment/dstr-assignment/tristen/tristen/tristen/required/negative-words.txt");
 
@@ -369,7 +323,7 @@ void FileReader::readNegative(const std::string &filename)
     }
 };
 
-void FileReader::readPositive(const std::string &filename)
+void FileReader::readPositive(const std::string& filename)
 {
     std::ifstream file("D:/Github/dstr-assignment/dstr-assignment/tristen/tristen/tristen/required/positive-words.txt");
 
@@ -392,7 +346,7 @@ void FileReader::readPositive(const std::string &filename)
 
 // start node
 
-int countColumns(const std::string &line)
+int countColumns(const std::string& line)
 {
     int count = 0;
     bool insideQuotes = false;
@@ -411,7 +365,7 @@ int countColumns(const std::string &line)
     return count + 1;
 }
 
-std::string **readCSV(const std::string &filename, int &numRows, int &numCols)
+std::string** readCSV(const std::string& filename, int& numRows, int& numCols)
 {
     std::ifstream file(filename);
     std::string line;
@@ -435,7 +389,7 @@ std::string **readCSV(const std::string &filename, int &numRows, int &numCols)
         return nullptr;
     }
 
-    std::string **data = new std::string *[numRows];
+    std::string** data = new std::string * [numRows];
     for (int i = 0; i < numRows; ++i)
     {
         data[i] = new std::string[numCols];
@@ -477,7 +431,7 @@ std::string **readCSV(const std::string &filename, int &numRows, int &numCols)
     return data;
 }
 
-void printCSV(std::string **data, int numRows, int numCols)
+void printCSV(std::string** data, int numRows, int numCols)
 {
     for (int i = 0; i < numRows; ++i)
     {
@@ -491,63 +445,34 @@ void printCSV(std::string **data, int numRows, int numCols)
     }
 }
 
-void countWordsInRow(const std::string &row, std::string *positiveWords, int positiveSize, std::string *negativeWords, int negativeSize, int &positiveCount, int &negativeCount)
+void countWordsInRow(const std::string& row, std::string* positiveWords, int positiveSize, std::string* negativeWords, int negativeSize, int& positiveCount, int& negativeCount) // THIS GUY IS THE LINEAR SEARCH
 {
+    std::istringstream stream(row);
     std::string word;
 
-    for (char c : row)
+    while (stream >> word)
     {
-        if (isalnum(c))
-        {
-            word += c;
-        }
-        else if (!word.empty())
-        {
-            for (int i = 0; i < positiveSize; ++i)
-            {
-                if (word == positiveWords[i])
-                {
-                    positiveCount++;
-                    break;
-                }
-            }
-
-            for (int i = 0; i < negativeSize; ++i)
-            {
-                if (word == negativeWords[i])
-                {
-                    negativeCount++;
-                    break;
-                }
-            }
-
-            word = "";
-        }
-    }
-
-    if (!word.empty())
-    {
-        for (int i = 0; i < positiveSize; ++i)
+        for (int i = 0; i < positiveSize; ++i) // THIS GUY IS THE LINEAR SEARCH
         {
             if (word == positiveWords[i])
             {
                 positiveCount++;
-                break;
+                break; // kill process
             }
         }
 
-        for (int i = 0; i < negativeSize; ++i)
+        for (int i = 0; i < negativeSize; ++i) // THIS GUY IS THE LINEAR SEARCH
         {
             if (word == negativeWords[i])
             {
                 negativeCount++;
-                break;
+                break; // kill process
             }
         }
     }
 }
 
-void trim(std::string &str)
+void trim(std::string& str)
 {
     size_t start = 0;
     while (start < str.size() && std::isspace(static_cast<unsigned char>(str[start])))
@@ -564,7 +489,7 @@ void trim(std::string &str)
     str.erase(end);
 }
 
-void analyzeCSV(std::string **data, int numRows, int numCols, FileReader &reader)
+void analyzeCSV(std::string** data, int numRows, int numCols, FileReader& reader)
 {
     for (int i = 0; i < numRows; ++i)
     {
@@ -585,12 +510,12 @@ void analyzeCSV(std::string **data, int numRows, int numCols, FileReader &reader
                 {
                     actualScore = std::stoi(scoreStr);
                 }
-                catch (const std::invalid_argument &)
+                catch (const std::invalid_argument&)
                 {
                     std::cerr << "Invalid score at row " << i + 1 << ": " << scoreStr << std::endl;
                     actualScore = 0;
                 }
-                catch (const std::out_of_range &)
+                catch (const std::out_of_range&)
                 {
                     std::cerr << "Score out of range at row " << i + 1 << ": " << scoreStr << std::endl;
                     actualScore = 0;
@@ -654,7 +579,7 @@ void analyzeCSV(std::string **data, int numRows, int numCols, FileReader &reader
     }
 }
 
-int totalCount(const std::string &filename)
+int totalCount(const std::string& filename)
 {
     std::ifstream file(filename);
     std::string line;
@@ -677,7 +602,7 @@ int totalCount(const std::string &filename)
 }
 
 // bubble sort algo
-void countWordFrequencies(std::string **data, int numRows, FileReader &reader, int positiveCounts[], int negativeCounts[])
+void countWordFrequencies(std::string** data, int numRows, FileReader& reader, int positiveCounts[], int negativeCounts[])
 {
     for (int i = 0; i < reader.positiveRead; ++i)
     {
@@ -697,37 +622,12 @@ void countWordFrequencies(std::string **data, int numRows, FileReader &reader, i
             row += data[i][j] + " ";
         }
 
-        std::string word = "";
-        for (char c : row)
+        std::istringstream stream(row);
+        std::string word;
+
+        while (stream >> word)
         {
-            if (isalnum(c))
-            {
-                word += c;
-            }
-            else if (!word.empty())
-            {
-                for (int j = 0; j < reader.positiveRead; ++j)
-                {
-                    if (word == reader.positiveWords[j])
-                    {
-                        positiveCounts[j]++;
-                    }
-                }
-
-                for (int j = 0; j < reader.negativeRead; ++j)
-                {
-                    if (word == reader.negativeWords[j])
-                    {
-                        negativeCounts[j]++;
-                    }
-                }
-
-                word = "";
-            }
-        }
-
-        if (!word.empty())
-        {
+            // pos check
             for (int j = 0; j < reader.positiveRead; ++j)
             {
                 if (word == reader.positiveWords[j])
@@ -736,6 +636,7 @@ void countWordFrequencies(std::string **data, int numRows, FileReader &reader, i
                 }
             }
 
+            // neg check
             for (int j = 0; j < reader.negativeRead; ++j)
             {
                 if (word == reader.negativeWords[j])
@@ -776,44 +677,17 @@ void displayTopWords(std::string words[], int counts[], int size)
 }
 // bubble SORT END
 
-void FileReader::countWordMatches(int &totalpositiveCount, int &totalnegativeCount)
+void FileReader::countWordMatches(int& totalpositiveCount, int& totalnegativeCount)
 {
     std::ifstream csvFile("D:/Github/dstr-assignment/dstr-assignment/tristen/tristen/tristen/required/tripadvisor_hotel_reviews.csv");
     std::string line;
-    std::string word;
 
     while (std::getline(csvFile, line))
     {
-        word = "";
-        for (char c : line)
-        {
-            if (isalnum(c))
-            {
-                word += c;
-            }
-            else if (!word.empty())
-            {
-                for (int i = 0; i < positiveRead; i++)
-                {
-                    if (word == positiveWords[i])
-                    {
-                        totalpositiveCount++;
-                    }
-                }
+        std::istringstream ss(line);
+        std::string word;
 
-                for (int i = 0; i < negativeRead; i++)
-                {
-                    if (word == negativeWords[i])
-                    {
-                        totalnegativeCount++;
-                    }
-                }
-
-                word = "";
-            }
-        }
-
-        if (!word.empty())
+        while (ss >> word)
         {
             for (int i = 0; i < positiveRead; i++)
             {
