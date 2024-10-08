@@ -2,7 +2,6 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <sstream>
 #include <iomanip>
 #include <ctime>
 #include <chrono>
@@ -109,10 +108,32 @@ void LinkedList :: insertIntoLinkedList(WordNode*& head, const string& word)
 int LinkedList::countWordsInReview(const string& review, WordNode*& reviewList, WordNode*& wordListHead)
 {
 	int count = 0;
-	stringstream ss(review);
 	string word;
 
-	while (ss >> word) {
+	// Traverse the string manually
+	for (size_t i = 0; i < review.length(); ++i) {
+		char c = review[i];
+
+		// If the character is part of a word (i.e., not a space or punctuation)
+		if (isalnum(static_cast<unsigned char>(c))) {
+			word += c; // Accumulate characters into the word
+		}
+		else if (!word.empty()) {
+			// We reached a separator (space, punctuation, etc.) and have a valid word to process
+			for (WordNode* node = wordListHead; node != nullptr; node = node->next) {
+				if (word == node->word) {
+					count++; // total +ve or -ve word count in review
+					insertIntoLinkedList(reviewList, word); // insert the word and its count into review list
+					node->count++; // update word count in main list
+					break;
+				}
+			}
+			word.clear(); // Reset the word for the next one
+		}
+	}
+
+	// If the last word is still pending (in case the review doesn't end with a space or punctuation)
+	if (!word.empty()) {
 		for (WordNode* node = wordListHead; node != nullptr; node = node->next) {
 			if (word == node->word) {
 				count++; // total +ve or -ve word count in review
@@ -122,8 +143,10 @@ int LinkedList::countWordsInReview(const string& review, WordNode*& reviewList, 
 			}
 		}
 	}
+
 	return count;
 }
+
 
 // process the reviews and count num of +ve and -ve words
 void LinkedList::processReviews(ReviewNode* reviewHead, WordNode*& positiveListHead, WordNode*& negativeListHead)
@@ -324,33 +347,38 @@ void LinkedList :: selectionSort(WordNode*& head)
 
 // Bubble sort function to sort the linked list 
 // according to word counts in ascending order
-void LinkedList::bubbleSort(WordNode*& head)
-{
+void LinkedList::bubbleSort(WordNode*& head) {
 	if (head == nullptr) return; // if the list is empty, do nothing.
 
-	bool swapped;
+	bool swappedvalue;
 	WordNode* ptr1;
-	WordNode* lptr = nullptr; //pointer to the last node sorted
+	WordNode* lptr = nullptr; // pointer to the last node sorted
 
-	do
-	{
-		swapped = false;
+	do {
+		swappedvalue = false;
 		ptr1 = head;
 
-		while (ptr1->next != lptr)
-		{
-			if (ptr1->count > ptr1->next->count)
-			{
-				// Swap the values (word and count) between adjacent nodes
-				swap(ptr1->word, ptr1->next->word);
-				swap(ptr1->count, ptr1->next->count);
-				swapped = true;
+		while (ptr1->next != lptr) {
+			if (ptr1->count > ptr1->next->count) {
+
+				// Temporary variables to hold the data of the first node
+				string tempWord = ptr1->word;
+				int tempCount = ptr1->count;
+
+				// Copy data from the next node to the current node
+				ptr1->word = ptr1->next->word;
+				ptr1->count = ptr1->next->count;
+
+				// Copy data from the temporary variables to the next node
+				ptr1->next->word = tempWord;
+				ptr1->next->count = tempCount;
+
+				swappedvalue = true;
 			}
 			ptr1 = ptr1->next;
 		}
-		lptr = ptr1; //set the last sorted node
-	} 
-	while (swapped);
+		lptr = ptr1; // set the last sorted node
+	} while (swappedvalue);
 }
 
 // WORKED

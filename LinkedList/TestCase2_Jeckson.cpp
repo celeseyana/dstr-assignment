@@ -4,7 +4,6 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <sstream>
 #include <iomanip>
 
 using namespace std;
@@ -29,8 +28,8 @@ int main()
 
         // Measure time to load positive and negative words into linked lists
         testcase2.measureExecutionTime([&]() {
-            testcase2.loadWords("required/positive-words.txt", positiveListHead);
-            testcase2.loadWords("required/negative-words.txt", negativeListHead);
+            testcase2.loadWords("positive-words.txt", positiveListHead);
+            testcase2.loadWords("negative-words.txt", negativeListHead);
             });
 
         int choice;
@@ -42,7 +41,7 @@ int main()
         double processingTime = 0.0;
 
         // Open the review CSV file for this iteration
-        ifstream file("required/tripadvisor_hotel_reviews.csv");
+        ifstream file("tripadvisor_hotel_reviews.csv");
         if (!file.is_open()) {
             cerr << "Error opening review file" << endl;
             return 1;
