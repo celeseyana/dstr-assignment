@@ -1,7 +1,6 @@
 #include "arrays.hpp"
 #include <iostream>
 #include <fstream>
-#include <sstream>
 #include <cctype>
 #include <limits>
 #include <string>
@@ -26,7 +25,7 @@ void displayMenu()
 
 void FileReader::readNegative(const std::string &filename)
 {
-    std::ifstream file("C:/Github/dstr-assignment/required/negative-words.txt");
+    std::ifstream file("D:/Github/dstr-assignment/required/negative-words.txt");
 
     if (file.is_open())
     {
@@ -47,7 +46,7 @@ void FileReader::readNegative(const std::string &filename)
 
 void FileReader::readPositive(const std::string &filename)
 {
-    std::ifstream file("C:/Github/dstr-assignment/required/positive-words.txt");
+    std::ifstream file("D:/Github/dstr-assignment/required/positive-words.txt");
 
     if (file.is_open())
     {
@@ -167,28 +166,57 @@ void printCSV(std::string **data, int numRows, int numCols)
     }
 }
 
-void countWordsInRow(const std::string &row, std::string *positiveWords, int positiveSize, std::string *negativeWords, int negativeSize, int &positiveCount, int &negativeCount) // THIS GUY IS THE LINEAR SEARCH
+void countWordsInRow(const std::string &row, std::string *positiveWords, int positiveSize, std::string *negativeWords, int negativeSize, int &positiveCount, int &negativeCount)
 {
-    std::istringstream stream(row);
     std::string word;
 
-    while (stream >> word)
+    for (char c : row)
     {
-        for (int i = 0; i < positiveSize; ++i) // THIS GUY IS THE LINEAR SEARCH
+        if (isalnum(c))
+        {
+            word += c;
+        }
+        else if (!word.empty())
+        {
+            for (int i = 0; i < positiveSize; ++i)
+            {
+                if (word == positiveWords[i])
+                {
+                    positiveCount++;
+                    break;
+                }
+            }
+
+            for (int i = 0; i < negativeSize; ++i)
+            {
+                if (word == negativeWords[i])
+                {
+                    negativeCount++;
+                    break;
+                }
+            }
+
+            word = "";
+        }
+    }
+
+    if (!word.empty())
+    {
+        for (int i = 0; i < positiveSize; ++i)
         {
             if (word == positiveWords[i])
             {
                 positiveCount++;
-                break; // kill process
+                break;
             }
         }
 
-        for (int i = 0; i < negativeSize; ++i) // THIS GUY IS THE LINEAR SEARCH
+        for (int i = 0; i < negativeSize; ++i)
         {
             if (word == negativeWords[i])
             {
                 negativeCount++;
-                break; // kill process
+                break;
             }
         }
     }
@@ -344,12 +372,37 @@ void countWordFrequencies(std::string **data, int numRows, FileReader &reader, i
             row += data[i][j] + " ";
         }
 
-        std::istringstream stream(row);
-        std::string word;
-
-        while (stream >> word)
+        std::string word = "";
+        for (char c : row)
         {
-            // pos check
+            if (isalnum(c))
+            {
+                word += c;
+            }
+            else if (!word.empty())
+            {
+                for (int j = 0; j < reader.positiveRead; ++j)
+                {
+                    if (word == reader.positiveWords[j])
+                    {
+                        positiveCounts[j]++;
+                    }
+                }
+
+                for (int j = 0; j < reader.negativeRead; ++j)
+                {
+                    if (word == reader.negativeWords[j])
+                    {
+                        negativeCounts[j]++;
+                    }
+                }
+
+                word = "";
+            }
+        }
+
+        if (!word.empty())
+        {
             for (int j = 0; j < reader.positiveRead; ++j)
             {
                 if (word == reader.positiveWords[j])
@@ -358,7 +411,6 @@ void countWordFrequencies(std::string **data, int numRows, FileReader &reader, i
                 }
             }
 
-            // neg check
             for (int j = 0; j < reader.negativeRead; ++j)
             {
                 if (word == reader.negativeWords[j])
@@ -401,15 +453,42 @@ void displayTopWords(std::string words[], int counts[], int size)
 
 void FileReader::countWordMatches(int &totalpositiveCount, int &totalnegativeCount)
 {
-    std::ifstream csvFile("C:/Github/dstr-assignment/required/tripadvisor_hotel_reviews.csv");
+    std::ifstream csvFile("D:/Github/dstr-assignment/required/tripadvisor_hotel_reviews.csv");
     std::string line;
+    std::string word;
 
     while (std::getline(csvFile, line))
     {
-        std::istringstream ss(line);
-        std::string word;
+        word = "";
+        for (char c : line)
+        {
+            if (isalnum(c))
+            {
+                word += c;
+            }
+            else if (!word.empty())
+            {
+                for (int i = 0; i < positiveRead; i++)
+                {
+                    if (word == positiveWords[i])
+                    {
+                        totalpositiveCount++;
+                    }
+                }
 
-        while (ss >> word)
+                for (int i = 0; i < negativeRead; i++)
+                {
+                    if (word == negativeWords[i])
+                    {
+                        totalnegativeCount++;
+                    }
+                }
+
+                word = "";
+            }
+        }
+
+        if (!word.empty())
         {
             for (int i = 0; i < positiveRead; i++)
             {
@@ -439,23 +518,23 @@ int main()
 
     FileReader reader;
 
-    reader.readNegative("C:/Github/dstr-assignment/required/negative-words.txt");
-    reader.readPositive("C:/Github/dstr-assignment/required/positive-words.txt");
+    reader.readNegative("D:/Github/dstr-assignment/required/negative-words.txt");
+    reader.readPositive("D:/Github/dstr-assignment/required/positive-words.txt");
     int *positiveCounts = new int[reader.positiveRead];
     int *negativeCounts = new int[reader.negativeRead];
 
     std::string filename;
 
-    filename = "C:/Github/dstr-assignment/required/tripadvisor_hotel_reviews.csv";
+    filename = "D:/Github/dstr-assignment/required/tripadvisor_hotel_reviews.csv";
     int reviewNumber = totalCount(filename);
 
-    filename = "C:/Github/dstr-assignment/required/positive-words.txt";
+    filename = "D:/Github/dstr-assignment/required/positive-words.txt";
     int totalPos = totalCount(filename);
 
-    filename = "C:/Github/dstr-assignment/required/negative-words.txt";
+    filename = "D:/Github/dstr-assignment/required/negative-words.txt";
     int totalNeg = totalCount(filename);
 
-    std::string **csvData = readCSV("C:/Github/dstr-assignment/required/tripadvisor_hotel_reviews.csv", numRows, numCols);
+    std::string **csvData = readCSV("D:/Github/dstr-assignment/required/tripadvisor_hotel_reviews.csv", numRows, numCols);
     countWordFrequencies(csvData, numRows, reader, positiveCounts, negativeCounts);
 
     int choice = 0;
