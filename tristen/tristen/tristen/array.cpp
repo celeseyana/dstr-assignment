@@ -146,18 +146,24 @@ double calculateSentimentScore(string review) {
     return 1 + 4 * normalizedScore;
 }
 
-// Insertion sort function to sort words (if needed)
-void insertionSort(string arr[], int size) {
-    for (int i = 1; i < size; i++) {
-        string key = arr[i];
-        int j = i - 1;
-        while (j >= 0 && arr[j] > key) {
-            arr[j + 1] = arr[j];
-            j--;
+// Selection sort function to sort words (if needed)
+void selectionSort(string arr[], int size) {
+    for (int i = 0; i < size - 1; i++) {
+        int minIndex = i;
+        for (int j = i + 1; j < size; j++) {
+            if (arr[j] < arr[minIndex]) {
+                minIndex = j;
+            }
         }
-        arr[j + 1] = key;
+        // Swap the found minimum element with the first element
+        if (minIndex != i) {
+            string temp = arr[i];
+            arr[i] = arr[minIndex];
+            arr[minIndex] = temp;
+        }
     }
 }
+
 
 void analyzeReviews() {
     for (int i = 0; i < reviewCount; i++) {
@@ -245,7 +251,7 @@ void calculateOverallSentiment() {
     cout << "Total Positive Word Count: " << totalPositiveCount << endl;
     cout << "Total Negative Word Count: " << totalNegativeCount << endl;
 
-    // Sort words by frequency (insertion sort)
+    // Sort words by frequency (selection sort)
     for (int i = 1; i < uniqueWordCount; i++) {
         string keyWord = uniqueWords[i];
         int keyFreq = wordFrequencies[i];
@@ -275,7 +281,7 @@ void calculateOverallSentiment() {
         for (int i = uniqueWordCount - 1; i >= 0 && wordFrequencies[i] == maxFrequency; i--) {
             cout << uniqueWords[i] << " (" << wordFrequencies[i] << " times)" << endl;
         }
-
+        cout << endl;
         // Minimum used word(s)
         cout << "Minimum used word(s): " << endl;
         for (int i = 0; i < uniqueWordCount && wordFrequencies[i] == minFrequency; i++) {
