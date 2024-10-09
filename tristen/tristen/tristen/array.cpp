@@ -184,7 +184,7 @@ void analyzeReviews() {
         else {
             cout << "Rating does not match sentiment analysis." << endl;
         }
-        cout << string(40, '-') << endl; // Separator line for readability
+        cout << string(60, '-') << endl; // Separator line for readability
     }
 }
 
@@ -270,7 +270,7 @@ void calculateOverallSentiment() {
     for (int i = 0; i < uniqueWordCount; i++) {
         cout << uniqueWords[i] << " = " << wordFrequencies[i] << " times" << endl;
     }
-
+    cout << endl;
     // Display maximum and minimum used words
     if (uniqueWordCount > 0) {
         int maxFrequency = wordFrequencies[uniqueWordCount - 1];
