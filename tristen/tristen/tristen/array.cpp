@@ -1,18 +1,21 @@
 #include "header.hpp"
 
 
-// Arrays for positive and negative words
-string positiveWords[MAX_WORDS];
-string negativeWords[MAX_WORDS];
 int posWordCount = 0, negWordCount = 0;
+
+
+
 
 // Dynamically allocated arrays for reviews and ratings
 string* reviews = nullptr;
 int* ratings = nullptr;
 int reviewCount = 0;
-string uniqueWords[MAX_WORDS];
-int wordFrequencies[MAX_WORDS];
 int uniqueWordCount = 0;
+
+string* uniqueWords = new string[MAX_WORDS];
+int* wordFrequencies = new int[MAX_WORDS];
+string* positiveWords = new string[MAX_WORDS];
+string* negativeWords = new string[MAX_WORDS];
 
 // Function to load words from a file
 void loadWords(const string& filename, string arr[], int& count) {
@@ -146,7 +149,7 @@ double calculateSentimentScore(string review) {
     return 1 + 4 * normalizedScore;
 }
 
-// Selection sort function to sort words (if needed)
+// Selection sort function to sort words 
 void selectionSort(string arr[], int size) {
     for (int i = 0; i < size - 1; i++) {
         int minIndex = i;
@@ -291,19 +294,17 @@ void calculateOverallSentiment() {
 }
 
 //----------------------------------------------ONG ZI YANG-----------------------------------------------------------
-#include "arrays.hpp"
-#include <iostream>
-#include <fstream>
-#include <cctype>
-#include <limits>
-#include <string>
-#include <cstring>
-
-FileReader::FileReader()
-{
-    negativeRead = 0;
-    positiveRead = 0;
-    reviewsRead = 0;
+FileReader::FileReader() {
+    negativeWords = new std::string[5000];
+    positiveWords = new std::string[5000];
+    reviews = new std::string[21000];
+    ratings = new int[21000];
+}
+FileReader::~FileReader() {
+    delete[] negativeWords;
+    delete[] positiveWords;
+    delete[] reviews;
+    delete[] ratings;
 }
 
 void displayMenu()
@@ -590,7 +591,7 @@ void analyzeCSV(std::string** data, int numRows, int numCols, FileReader& reader
             normScore = (double)(rawSent - minRawScore) / (maxRawScore - minRawScore);
         }
 
-        int ratedScore = 1 + (4 * normScore);
+        int ratedScore = 1 + static_cast<int>(4 * normScore);
         double trueSentScore = 1 + (4 * normScore);
 
         if (ratedScore == 1 || ratedScore == 2)

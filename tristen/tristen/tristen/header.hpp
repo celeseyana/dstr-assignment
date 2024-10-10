@@ -17,23 +17,23 @@ using namespace chrono;
 class FileReader
 {
 public:
-    static const int array_size = 5000;
-    static const int csv_array_size = 21000;
-    std::string negativeWords[array_size];
-    std::string positiveWords[array_size];
-    std::string reviews[csv_array_size];
-    int ratings[csv_array_size];
-
+    std::string* negativeWords = nullptr;
+    std::string* positiveWords = nullptr;
+    std::string* reviews = nullptr;
+    int* ratings = nullptr;
     int negativeRead = 0;
     int positiveRead = 0;
     int reviewsRead = 0;
-
+    
     FileReader();
+
+
+    // Destructor
+    ~FileReader();
 
     void readNegative(const std::string& filename);
     void readPositive(const std::string& filename);
     void countWordMatches(int& positiveCount, int& negativeCount);
-
 };
 void displayMenu();
 void printCSV(std::string** data, int numRows, int numCols);
@@ -47,14 +47,15 @@ string** readCSV(const std::string& filename, int& numRows, int& numCols);
 //--------------------------------------------TRISTEN------------------------------------------------------------------
 // Constants
 const int MAX_WORDS = 5000; // Max number of words for positive/negative lists
-
-extern string uniqueWords[MAX_WORDS];    // Array for unique words
-extern int wordFrequencies[MAX_WORDS];   // Array for word frequencies
+const int array_size = 5000;  // Array for word frequencies
 extern int uniqueWordCount;
 
+extern string* uniqueWords;
+extern int* wordFrequencies;
+extern string* positiveWords;
+extern string* negativeWords;
 
-extern string positiveWords[MAX_WORDS];
-extern string negativeWords[MAX_WORDS];
+
 extern int posWordCount;
 extern int negWordCount;
 
